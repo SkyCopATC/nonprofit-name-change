@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build Your Club — Nonprofit Name Change Assistant</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f4f8;color:#1a1a2e;font-size:14px;-webkit-font-smoothing:antialiased}
+:root{--navy:#1B3A5C;--teal:#2A7B6F;--gold:#D4A017;--red:#c0392b;--green:#2d7a4f;--bg:#f0f4f8;--white:#fff;--border:#e2e8f0;--text:#1a1a2e;--muted:#64748b;--light:#f8fafc}
+.hidden{display:none!important}
+
+/* ── AUTH SCREENS ── */
+.auth-wrap{min-height:100vh;background:linear-gradient(135deg,var(--navy),var(--teal));display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-card{background:var(--white);border-radius:24px;padding:40px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.auth-logo{width:48px;height:48px;background:var(--navy);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;margin:0 auto 20px}
+.auth-title{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:6px}
+.auth-sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:24px}
+.auth-tabs{display:flex;background:var(--light);border-radius:10px;padding:4px;margin-bottom:20px}
+.auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;color:var(--muted);transition:.15s}
+.auth-tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select,.field textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);background:#fff;font-family:inherit;transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--teal)}
+.field textarea{resize:vertical;min-height:80px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.2s;white-space:nowrap;font-family:inherit}
+.btn-primary{background:var(--navy);color:#fff;width:100%}
+.btn-primary:hover{background:#264a73}
+.btn-ghost{background:transparent;color:var(--navy)}
+.btn-ghost:hover{background:var(--light)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:#236b60}
+.btn-outline{background:#fff;color:var(--navy);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--navy)}
+.auth-foot{text-align:center;margin-top:18px;font-size:13px;color:var(--muted)}
+.auth-foot a{color:var(--navy);font-weight:600;cursor:pointer}
+
+/* ── ONBOARDING ── */
+.ob-wrap{min-height:100vh;background:linear-gradient(135deg,var(--navy),var(--teal));display:flex;align-items:center;justify-content:center;padding:24px}
+.ob-card{background:var(--white);border-radius:24px;width:100%;max-width:680px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.ob-progress{display:flex;background:var(--light);height:4px}
+.ob-progress span{flex:1;background:var(--border);transition:.3s}
+.ob-progress span.done{background:var(--teal)}
+.ob-body{padding:40px}
+.ob-step{font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.ob-title{font-size:24px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.ob-desc{font-size:14px;color:var(--muted);margin-bottom:24px}
+.ob-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+.ob-pick{padding:14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;text-align:center;transition:.15s;background:#fff}
+.ob-pick:hover{border-color:var(--teal)}
+.ob-pick.selected{border-color:var(--teal);background:rgba(42,123,111,.06)}
+.ob-pick-title{font-size:13px;font-weight:600;color:var(--navy)}
+.ob-pick-desc{font-size:11px;color:var(--muted);margin-top:3px}
+.ob-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:10px}
+
+/* ── SIDEBAR ── */
+.sidebar{width:240px;background:var(--navy);min-height:100vh;display:flex;flex-direction:column;flex-shrink:0;position:fixed;left:0;top:0;bottom:0;z-index:10}
+.sidebar-logo{padding:20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sidebar-logo .mark{width:34px;height:34px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;flex-shrink:0}
+.sidebar-logo .text p{font-size:13px;font-weight:700;color:#fff;line-height:1.2}
+.sidebar-logo .text span{font-size:11px;color:rgba(255,255,255,.4);line-height:1}
+.sidebar-org{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-org .label{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.sidebar-org .name{font-size:12px;color:rgba(255,255,255,.8);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-nav{flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;color:rgba(255,255,255,.7);background:transparent;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;text-align:left;font-family:inherit;transition:.15s;width:100%}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.08);color:#fff}
+.nav-item .icon{font-size:15px;width:18px;text-align:center}
+.sidebar-bottom{padding:12px;border-top:1px solid rgba(255,255,255,.08)}
+.user-row{display:flex;align-items:center;gap:10px;padding:6px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.u-name{font-size:12px;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.signout-btn{background:transparent;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:14px;padding:4px;font-family:inherit}
+.signout-btn:hover{color:#fff}
+.signout-btn-full{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.9);cursor:pointer;font-size:13px;font-weight:600;padding:10px 12px;border-radius:8px;font-family:inherit;margin-top:8px;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.signout-btn-full:hover{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.25)}
+
+/* ── MAIN CONTENT ── */
+.main{margin-left:240px;flex:1;min-height:100vh}
+.page{padding:32px;max-width:1100px}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.page-title{font-size:24px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--muted)}
+
+/* ── CARDS / SECTIONS ── */
+.section{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px}
+.section-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.section-title .badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px}
+.badge-red{background:#fde8e6;color:var(--red)}
+.badge-amber{background:#fff4d6;color:#a86b00}
+.badge-green{background:#dcf5e7;color:var(--green)}
+.badge-grey{background:#eef2f7;color:var(--muted)}
+.badge-blue{background:#dbeafe;color:var(--navy)}
+
+/* Dashboard stat tiles */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px}
+.stat-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stat-num{font-size:28px;font-weight:700;color:var(--navy);line-height:1}
+.stat-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.stat-card.alert{border-color:var(--red)}
+.stat-card.alert .stat-num{color:var(--red)}
+
+/* Deadline list rows */
+.dl-row{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:#fff;transition:.15s}
+.dl-row:hover{border-color:var(--teal)}
+.dl-row.overdue{border-left:3px solid var(--red)}
+.dl-row.soon{border-left:3px solid var(--gold)}
+.dl-row.upcoming{border-left:3px solid var(--teal)}
+.dl-row.done{opacity:.55}
+.dl-when{font-size:12px;font-weight:700;text-align:center;min-width:64px;padding:6px 8px;border-radius:8px;background:var(--light);color:var(--navy)}
+.dl-when.overdue{background:#fde8e6;color:var(--red)}
+.dl-when.soon{background:#fff4d6;color:#a86b00}
+.dl-info{flex:1;min-width:0}
+.dl-name{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:2px}
+.dl-meta{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dl-status{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.dl-status select{background:transparent;border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;color:inherit}
+
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.cal-grid{grid-template-columns:repeat(2,1fr)}}
+.cal-month{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px}
+.cal-month-name{font-size:13px;font-weight:700;color:var(--navy);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+.cal-event{font-size:12px;padding:6px 0;color:var(--text);border-bottom:1px dashed var(--border)}
+.cal-event:last-child{border:none}
+.cal-event .day{font-weight:700;color:var(--navy);margin-right:6px;font-size:11px}
+.cal-event .ev-empty{color:var(--muted);font-style:italic}
+
+/* Filing detail modal-like view */
+.filing-detail{padding:18px;background:var(--light);border-radius:10px;margin-top:10px;font-size:13px;color:var(--text);line-height:1.6;display:none}
+.filing-detail.show{display:block}
+.filing-detail h4{font-size:13px;color:var(--navy);font-weight:700;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.04em}
+.filing-detail h4:first-child{margin-top:0}
+.filing-detail a{color:var(--teal);font-weight:600}
+
+/* Documents */
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.doc-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:6px}
+.doc-card:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.doc-icon{font-size:22px;margin-bottom:4px}
+.doc-name{font-size:14px;font-weight:700;color:var(--navy)}
+.doc-desc{font-size:12px;color:var(--muted);line-height:1.4;flex:1}
+.doc-meta{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* Doc generator form */
+.gen-form{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px}
+.gen-output{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;font-family:Georgia,serif;line-height:1.6;color:var(--text);min-height:200px;white-space:pre-wrap;font-size:14px}
+.gen-output.placeholder{color:var(--muted);font-style:italic;font-family:inherit;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center}
+.gen-toolbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:12px;flex-wrap:wrap}
+
+/* Education */
+.edu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.edu-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:.15s}
+.edu-card:hover{border-color:var(--teal);transform:translateY(-2px)}
+.edu-tag{font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.edu-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.edu-snip{font-size:12px;color:var(--muted);line-height:1.4}
+.edu-article{background:#fff;border:1px solid var(--border);border-radius:14px;padding:32px;line-height:1.7;color:var(--text);font-size:14px}
+.edu-article h2{font-size:22px;color:var(--navy);margin-bottom:8px}
+.edu-article h3{font-size:15px;color:var(--navy);margin:18px 0 6px}
+.edu-article p{margin-bottom:12px}
+.edu-article ul{margin-left:22px;margin-bottom:12px}
+.edu-article li{margin-bottom:4px}
+.edu-back{background:transparent;border:none;color:var(--teal);font-weight:600;cursor:pointer;font-size:13px;padding:0;margin-bottom:16px;font-family:inherit}
+
+/* Settings */
+.settings-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px}
+.settings-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border:none}
+.settings-label{font-size:13px;font-weight:600;color:var(--text)}
+.settings-value{font-size:13px;color:var(--muted)}
+
+/* ── MOBILE SIDEBAR TOGGLE ── */
+.mobile-toggle{display:none;position:fixed;top:12px;left:12px;z-index:30;background:var(--navy);color:#fff;border:none;border-radius:8px;width:42px;height:42px;font-size:22px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);align-items:center;justify-content:center;padding:0}
+.sidebar-close{display:none;position:absolute;top:12px;right:12px;background:rgba(255,255,255,.08);border:none;color:#fff;width:34px;height:34px;font-size:20px;line-height:1;cursor:pointer;padding:0;border-radius:8px;z-index:5;align-items:center;justify-content:center}
+.sidebar-close:hover{background:rgba(255,255,255,.18)}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9}
+.sidebar-backdrop.show{display:block}
+@media(max-width:768px){
+  .mobile-toggle{display:flex}
+  .sidebar-close{display:flex}
+  .sidebar{transform:translateX(-100%);transition:transform .25s ease;width:260px;box-shadow:0 0 24px rgba(0,0,0,.25)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .page{padding:64px 16px 24px}
+}
+
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:24px;z-index:50}
+.modal-box{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow:auto}
+.modal-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.modal-close{background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;float:right;line-height:1;padding:0}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+
+/* Pro badge in sidebar */
+.pro-badge{background:linear-gradient(135deg,var(--gold),#b58814);border-radius:10px;padding:10px 12px;cursor:pointer;margin-bottom:10px;transition:.15s}
+.pro-badge:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(212,160,23,.3)}
+.pro-badge.is-pro{background:linear-gradient(135deg,var(--teal),#236b60);cursor:default}
+.pro-badge.is-pro:hover{transform:none;box-shadow:none}
+.badge-label{font-size:12px;font-weight:700;color:#fff;line-height:1.2}
+.badge-sub{font-size:10px;color:rgba(255,255,255,.85);margin-top:2px}
+
+/* Team page */
+.team-code-display{background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;padding:24px;border-radius:14px;text-align:center;margin-bottom:20px}
+.team-code-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.8;margin-bottom:8px}
+.team-code-value{font-size:34px;font-weight:700;letter-spacing:.12em;font-family:'Courier New',monospace;margin-bottom:10px}
+.team-member-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:#fff}
+.team-member-info{flex:1;min-width:0}
+.team-member-name{font-size:13px;font-weight:600;color:var(--navy)}
+.team-member-email{font-size:11px;color:var(--muted)}
+.role-pill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.role-leader{background:#dbeafe;color:var(--navy)}
+.role-member{background:#eef2f7;color:var(--muted)}
+
+/* History */
+.hist-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--border);border-radius:10px;margin-bottom:6px;background:#fff;font-size:13px}
+.hist-when{font-size:11px;color:var(--muted);min-width:120px;white-space:nowrap}
+.hist-who{font-size:12px;font-weight:600;color:var(--navy);min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-what{flex:1;color:var(--text)}
+.hist-status-chip{font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em;display:inline-block}
+
+/* Analytics */
+.score-card{background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;padding:24px;border-radius:16px;margin-bottom:20px;text-align:center}
+.score-num{font-size:54px;font-weight:700;line-height:1}
+.score-label{font-size:13px;opacity:.85;margin-top:4px}
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:13px}
+.bar-label{min-width:140px;color:var(--text);font-weight:600}
+.bar-track{flex:1;background:var(--light);border-radius:6px;height:22px;position:relative;overflow:hidden}
+.bar-fill{height:100%;background:var(--teal);border-radius:6px;display:flex;align-items:center;padding-left:8px;color:#fff;font-size:11px;font-weight:600;min-width:24px}
+.bar-meta{font-size:11px;color:var(--muted);min-width:60px;text-align:right}
+
+/* Admin */
+.admin-team{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:#fff;cursor:pointer;transition:.15s}
+.admin-team:hover{border-color:var(--teal);transform:translateY(-1px)}
+.admin-team-info{flex:1}
+.admin-team-name{font-size:14px;font-weight:700;color:var(--navy)}
+.admin-team-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.admin-banner{background:linear-gradient(135deg,var(--gold),#b58814);color:#fff;padding:14px 18px;border-radius:12px;margin-bottom:20px;font-size:13px}
+.admin-banner b{font-weight:700}
+
+/* Top-right sign-out (visible on every app page) */
+.btn-red{background:var(--red);color:#fff;border:none}
+.btn-red:hover{background:#9c2d22}
+.topbar-back{position:fixed;top:16px;left:262px;background:#fff;border:1px solid var(--border);color:var(--navy);font-size:12px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;z-index:20;font-family:inherit;transition:.15s;display:none;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.topbar-back:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+@media(max-width:768px){
+  .topbar-back{top:14px;left:64px;font-size:11px;padding:7px 11px}
+}
+.topbar-signout{position:fixed;top:16px;right:20px;background:#fff;border:1px solid var(--border);color:var(--navy);font-size:12px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;z-index:20;font-family:inherit;transition:.15s;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.topbar-signout:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+@media(max-width:768px){
+  .topbar-signout{top:14px;right:14px;font-size:11px;padding:7px 11px}
+}
+
+/* Misc */
+.empty-state{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+.disclaimer{background:#fff7d6;border:1px solid #f5d77f;border-radius:10px;padding:12px;font-size:12px;color:#5c4400;margin-bottom:20px;line-height:1.5}
+.disclaimer b{color:#3d2d00}
+</style>
+</head>
+<body>
+
+<!-- ════════════ AUTH ════════════ -->
+<div id="screen-auth" class="auth-wrap hidden">
+  <div class="auth-card">
+    <div class="auth-logo">B</div>
+    <h1 class="auth-title">Build Your Club</h1>
+    <p class="auth-sub">Name Change Assistant</p>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-signin" onclick="switchAuthTab('signin')">Sign In</div>
+      <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</div>
+    </div>
+    <div id="form-signin">
+      <div class="field"><label>Email</label><input type="email" id="si-email" placeholder="you@nonprofit.org"></div>
+      <div class="field"><label>Password</label><input type="password" id="si-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignIn()"></div>
+      <button class="btn btn-primary" onclick="doSignIn()">Sign In</button>
+      <p class="auth-foot">Demo account: <b>demo@example.org</b> / <b>demo</b></p>
+    </div>
+    <div id="form-signup" class="hidden">
+      <div class="field"><label>Your Name</label><input type="text" id="su-name" placeholder="Pat Lee"></div>
+      <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@nonprofit.org"></div>
+      <div class="field"><label>Password</label><input type="password" id="su-pass" placeholder="At least 6 characters" onkeydown="if(event.key==='Enter')doSignUp()"></div>
+      <button class="btn btn-primary" onclick="doSignUp()">Create Account →</button>
+      <p class="auth-foot">By creating an account you agree this is a demo and no real data is stored remotely.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ ONBOARDING ════════════ -->
+<div id="screen-onboard" class="ob-wrap hidden">
+  <div class="ob-card">
+    <div class="ob-body">
+      <div class="ob-step">Quick setup</div>
+      <h2 class="ob-title">What's your organization called?</h2>
+      <p class="ob-desc">We'll use this on your marketing materials and plan.</p>
+      <div class="field"><label>Organization Legal Name</label><input type="text" id="ob-orgname" placeholder="Build Your Club Foundation" onkeydown="if(event.key==='Enter')finishOnboarding()"></div>
+      <div class="ob-nav">
+        <button class="btn btn-ghost" onclick="signOut()">← Sign out</button>
+        <button class="btn btn-teal" onclick="finishOnboarding()">Finish setup →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ TEAM CHOICE (after sign-up) ════════════ -->
+<div id="screen-teamchoice" class="auth-wrap hidden">
+  <div class="auth-card">
+    <div class="auth-logo">B</div>
+    <h1 class="auth-title">Welcome aboard</h1>
+    <p class="auth-sub">Are you starting a new compliance tracker or joining a teammate?</p>
+    <button class="btn btn-primary" style="margin-bottom:10px" onclick="chooseTeamPath('new')">Start a new organization →</button>
+    <button class="btn btn-outline" style="width:100%;margin-bottom:14px" onclick="chooseTeamPath('join')">Join an existing team</button>
+    <div id="join-team-section" class="hidden">
+      <div class="field"><label>Team Code</label><input type="text" id="join-code" placeholder="e.g. ABC234" onkeydown="if(event.key==='Enter')joinTeamByCode()" style="text-transform:uppercase;letter-spacing:.1em;font-family:'Courier New',monospace"></div>
+      <button class="btn btn-teal" style="width:100%" onclick="joinTeamByCode()">Join Team →</button>
+    </div>
+    <p class="auth-foot" style="margin-top:18px"><a onclick="signOut()">← Sign out</a></p>
+  </div>
+</div>
+
+<!-- ════════════ MAIN APP ════════════ -->
+<div id="screen-app" class="hidden" style="display:flex">
+  <button class="mobile-toggle" type="button" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+  <button class="topbar-signout" type="button" onclick="signOut()" title="Sign out">↩ Sign Out</button>
+  <button class="topbar-back" id="back-to-dash" type="button" onclick="navigate('dashboard')" title="Back to dashboard">← Dashboard</button>
+  <div class="sidebar-backdrop" onclick="closeSidebar()"></div>
+  <aside class="sidebar">
+    <button class="sidebar-close" type="button" onclick="closeSidebar()" aria-label="Close menu">✕</button>
+    <div class="sidebar-logo">
+      <div class="mark">B</div>
+      <div class="text"><p>Build Your Club</p><span>Name Change Assistant</span></div>
+    </div>
+    <div class="sidebar-org"><div class="label">Organization</div><div class="name" id="sb-org">—</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-label">Main</div>
+        <button class="nav-item" id="nav-dashboard" onclick="navigate('dashboard')"><span class="icon">🏠</span> Dashboard</button>
+        <button class="nav-item" id="nav-projects" onclick="navigate('projects')"><span class="icon">📋</span> My Renames</button>
+        <button class="nav-item" id="nav-new" onclick="navigate('new')"><span class="icon">➕</span> Start a Rename</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Active Project</div>
+        <button class="nav-item" id="nav-project" onclick="navigate('project')"><span class="icon">📄</span> Project Overview</button>
+        <button class="nav-item" id="nav-state" onclick="navigate('state')"><span class="icon">🏛️</span> State Filing</button>
+        <button class="nav-item" id="nav-irs" onclick="navigate('irs')"><span class="icon">🔐</span> IRS Notification</button>
+        <button class="nav-item" id="nav-notify" onclick="navigate('notify')"><span class="icon">📬</span> Notification Checklist</button>
+        <button class="nav-item" id="nav-trademark" onclick="navigate('trademark')"><span class="icon">™️</span> Brand &amp; Trademark</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Output</div>
+        <button class="nav-item" id="nav-documents" onclick="navigate('documents')"><span class="icon">📥</span> Documents</button>
+        <button class="nav-item" id="nav-summary" onclick="navigate('summary')"><span class="icon">📊</span> Project Summary</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Account</div>
+        <button class="nav-item" id="nav-team" onclick="navigate('team')"><span class="icon">👥</span> Team</button>
+        <button class="nav-item" id="nav-history" onclick="navigate('history')"><span class="icon">📜</span> History</button>
+        <button class="nav-item" id="nav-analytics" onclick="navigate('analytics')"><span class="icon">📈</span> Analytics</button>
+        <button class="nav-item" id="nav-settings" onclick="navigate('settings')"><span class="icon">⚙️</span> Settings</button>
+        <a class="nav-item" href="Guide.html" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><span class="icon">📖</span> User Guide</a>
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="pro-badge" id="pro-badge" onclick="openUpgradeModal()">
+        <div class="badge-label" id="pro-label">⚡ Upgrade to Pro</div>
+        <div class="badge-sub" id="pro-sub">$29/month · 14-day free trial</div>
+      </div>
+      <div class="user-row">
+        <div class="user-avatar" id="sb-avatar">?</div>
+        <div class="user-info"><div class="u-name" id="sb-uname">—</div></div>
+      </div>
+      <button class="signout-btn-full" onclick="signOut()" title="Sign out">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div id="page-dashboard" class="page"></div>
+    <div id="page-projects" class="page hidden"></div>
+    <div id="page-new" class="page hidden"></div>
+    <div id="page-project" class="page hidden"></div>
+    <div id="page-state" class="page hidden"></div>
+    <div id="page-irs" class="page hidden"></div>
+    <div id="page-notify" class="page hidden"></div>
+    <div id="page-trademark" class="page hidden"></div>
+    <div id="page-documents" class="page hidden"></div>
+    <div id="page-summary" class="page hidden"></div>
+    <div id="page-history" class="page hidden"></div>
+    <div id="page-analytics" class="page hidden"></div>
+    <div id="page-team" class="page hidden"></div>
+    <div id="page-settings" class="page hidden"></div>
+    <div id="page-admin" class="page hidden"></div>
+  </main>
+</div>
+
+<!-- Upgrade modal -->
+<div id="upgrade-modal" class="modal-bg hidden">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeUpgradeModal()">✕</button>
+    <div style="font-size:28px;margin-bottom:8px">⚡</div>
+    <div class="modal-title">Upgrade to Name Change Assistant Pro</div>
+    <div class="modal-sub">Unlock unlimited team seats, priority support, and advanced donor management features.</div>
+    <ul style="font-size:13px;color:var(--text);line-height:1.7;margin:0 0 18px 18px">
+      <li><b>Unlimited team members</b> — Free is capped at 3 seats</li>
+      <li>Priority email support</li>
+      <li>Automated thank-you email send (coming soon)</li>
+      <li>Export your data anytime</li>
+    </ul>
+    <div style="background:var(--light);padding:14px;border-radius:10px;text-align:center;margin-bottom:8px">
+      <div style="font-size:24px;font-weight:700;color:var(--navy)">$29<span style="font-size:13px;color:var(--muted);font-weight:400">/month</span></div>
+      <div style="font-size:12px;color:var(--muted)">14-day free trial · cancel anytime</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeUpgradeModal()">Maybe later</button>
+      <button class="btn btn-teal" onclick="startProTrial()">Start 14-day Free Trial →</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ═════════════════════════════════════════════
+//  STATIC DATA — org types, brackets, states
+// ═════════════════════════════════════════════
+const STATES = {
+  AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California',
+  CO:'Colorado', CT:'Connecticut', DE:'Delaware', DC:'District of Columbia',
+  FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois',
+  IN:'Indiana', IA:'Iowa', KS:'Kansas', KY:'Kentucky', LA:'Louisiana',
+  ME:'Maine', MD:'Maryland', MA:'Massachusetts', MI:'Michigan', MN:'Minnesota',
+  MS:'Mississippi', MO:'Missouri', MT:'Montana', NE:'Nebraska', NV:'Nevada',
+  NH:'New Hampshire', NJ:'New Jersey', NM:'New Mexico', NY:'New York',
+  NC:'North Carolina', ND:'North Dakota', OH:'Ohio', OK:'Oklahoma', OR:'Oregon',
+  PA:'Pennsylvania', RI:'Rhode Island', SC:'South Carolina', SD:'South Dakota',
+  TN:'Tennessee', TX:'Texas', UT:'Utah', VT:'Vermont', VA:'Virginia',
+  WA:'Washington', WV:'West Virginia', WI:'Wisconsin', WY:'Wyoming'
+};
+
+// ═════════════════════════════════════════════
+//  STATE & PERSISTENCE
+// ═════════════════════════════════════════════
+const state = {
+  users: {},     // email -> { name, password, teamId, isSuperAdmin }
+  teams: {},     // teamId -> { id, profile, statuses, history, members:{email:role}, isPro, createdAt }
+  currentEmail: null,
+  selectedDoc: null,
+  selectedFiling: null,
+  selectedArticle: null,
+  adminViewingTeam: null
+};
+
+function save(){
+  try { localStorage.setItem('bya_rename_v1', JSON.stringify(state)); } catch(e){}
+}
+function load(){
+  try {
+    const raw = localStorage.getItem('bya_rename_v1');
+    if (raw){
+      const data = JSON.parse(raw);
+      Object.assign(state, data);
+    }
+  } catch(e){}
+}
+function currentUser(){ return state.currentEmail ? state.users[state.currentEmail] : null; }
+function currentTeam(){
+  if (state.adminViewingTeam && state.teams[state.adminViewingTeam]) return state.teams[state.adminViewingTeam];
+  const u = currentUser();
+  if (!u || !u.teamId) return null;
+  return state.teams[u.teamId] || null;
+}
+function isSuperAdmin(){ const u = currentUser(); return !!(u && u.isSuperAdmin); }
+function teamRole(){
+  const u = currentUser(); const t = currentTeam();
+  if (!u || !t) return null;
+  return t.members && t.members[state.currentEmail] || null;
+}
+function isLeader(){ return teamRole() === 'leader'; }
+
+function generateTeamCode(){
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let code;
+  do {
+    code = '';
+    for (let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  } while (state.teams[code]);
+  return code;
+}
+function createTeam(leaderEmail, profile){
+  const id = generateTeamCode();
+  state.teams[id] = {
+    id, profile: profile || {}, statuses: {}, history: [],
+    members: { [leaderEmail]: 'leader' },
+    isPro: false, isOnTrial: false, trialEnds: null,
+    proposals: [], templates: {}, funderLibrary: [], activeProposalId: null,
+    createdAt: new Date().toISOString()
+  };
+  return id;
+}
+function logHistory(entry){
+  const t = currentTeam();
+  if (!t) return;
+  t.history = t.history || [];
+  t.history.unshift({ ...entry, when: new Date().toISOString(), by: state.currentEmail });
+  if (t.history.length > 200) t.history.length = 200;
+}
+
+
+
+
+// ═════════════════════════════════════════════
+//  NAME CHANGE CONSTANTS
+// ═════════════════════════════════════════════
+const ENTITY_TYPES = [
+  { id:'501c3', label:'501(c)(3) Public Charity' },
+  { id:'501c4', label:'501(c)(4) Social Welfare (incl. most HOAs)' },
+  { id:'501c6', label:'501(c)(6) Business League / Trade Association' },
+  { id:'501c7', label:'501(c)(7) Social or Recreational Club' },
+  { id:'state-only', label:'State-Formed Nonprofit (no IRS recognition yet)' },
+  { id:'other', label:'Other Tax-Exempt Type' }
+];
+
+const SCENARIOS = [
+  { id:'hoa', label:'HOA Homeowner Takeover', desc:'A builder formed the association; homeowners reach the takeover threshold and need to rebrand under their own name.', icon:'🏘️' },
+  { id:'rebrand', label:'Strategic Rebrand', desc:'The organization has evolved and the existing name no longer fits the mission, audience, or geographic scope.', icon:'🎨' },
+  { id:'merger', label:'Merger Absorption', desc:'Two organizations are combining; one is absorbed and the surviving entity takes a new name.', icon:'🤝' },
+  { id:'trademark', label:'Trademark Conflict', desc:'A cease-and-desist or trademark search has surfaced a conflict, forcing a name change.', icon:'⚖️' },
+  { id:'memorial', label:'Memorial Rename', desc:'Honoring a founder, major donor, or community figure by renaming the organization after them.', icon:'🕊️' },
+  { id:'fiscal-exit', label:'Fiscal Sponsorship Exit', desc:'A project incubated under a fiscal sponsor is now independent and choosing its own legal name.', icon:'🚪' }
+];
+
+const PROJECT_STATUSES = ['planning','board-vote','state-filing','irs-notification','notifications','complete'];
+
+const STATE_DATA = {
+  'AL':{name:'Alabama',  form:'Articles of Amendment',     fee:'$10',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'AK':{name:'Alaska',   form:'Articles of Amendment',     fee:'$25',   processing:'10–15 days', agency:'Dept of Commerce',   note:''},
+  'AZ':{name:'Arizona',  form:'Articles of Amendment',     fee:'$25',   processing:'2–3 weeks',  agency:'Corporation Commission', note:''},
+  'AR':{name:'Arkansas', form:'Articles of Amendment',     fee:'$25',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'CA':{name:'California', form:'Certificate of Amendment', fee:'$30',  processing:'1–2 weeks',  agency:'Secretary of State', note:'Attorney General notice required for nonprofit public benefit corporations.'},
+  'CO':{name:'Colorado', form:'Articles of Amendment (online)', fee:'$25', processing:'Same day', agency:'Secretary of State', note:''},
+  'CT':{name:'Connecticut', form:'Certificate of Amendment', fee:'$50', processing:'2–4 weeks',  agency:'Secretary of State', note:''},
+  'DE':{name:'Delaware', form:'Certificate of Amendment',  fee:'$180', processing:'1–2 weeks',  agency:'Division of Corporations', note:''},
+  'DC':{name:'District of Columbia', form:'Articles of Amendment', fee:'$80', processing:'10–15 days', agency:'DCRA', note:''},
+  'FL':{name:'Florida',  form:'Articles of Amendment',     fee:'$35',   processing:'5–10 days',  agency:'Division of Corporations', note:''},
+  'GA':{name:'Georgia',  form:'Articles of Amendment',     fee:'$20',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'HI':{name:'Hawaii',   form:'Articles of Amendment',     fee:'$25',   processing:'5–10 days',  agency:'DCCA',               note:''},
+  'ID':{name:'Idaho',    form:'Articles of Amendment',     fee:'$30',   processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'IL':{name:'Illinois', form:'Articles of Amendment',     fee:'$25',   processing:'10–15 days', agency:'Secretary of State', note:''},
+  'IN':{name:'Indiana',  form:'Articles of Amendment',     fee:'$30',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'IA':{name:'Iowa',     form:'Articles of Amendment',     fee:'$5',    processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'KS':{name:'Kansas',   form:'Articles of Amendment',     fee:'$20',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'KY':{name:'Kentucky', form:'Articles of Amendment',     fee:'$8',    processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'LA':{name:'Louisiana',form:'Articles of Amendment',     fee:'$25',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'ME':{name:'Maine',    form:'Articles of Amendment',     fee:'$35',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'MD':{name:'Maryland', form:'Articles of Amendment',     fee:'$100',  processing:'7–10 days',  agency:'Dept of Assessments', note:''},
+  'MA':{name:'Massachusetts', form:'Articles of Amendment', fee:'$15',  processing:'5–10 days',  agency:'Secretary of Commonwealth', note:''},
+  'MI':{name:'Michigan', form:'Certificate of Amendment',  fee:'$10',   processing:'5–7 days',   agency:'LARA',               note:''},
+  'MN':{name:'Minnesota',form:'Articles of Amendment',     fee:'$35',   processing:'7–10 days',  agency:'Secretary of State', note:''},
+  'MS':{name:'Mississippi', form:'Articles of Amendment',  fee:'$50',   processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'MO':{name:'Missouri', form:'Articles of Amendment',     fee:'$10',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'MT':{name:'Montana',  form:'Articles of Amendment',     fee:'$15',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'NE':{name:'Nebraska', form:'Articles of Amendment',     fee:'$30',   processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'NV':{name:'Nevada',   form:'Certificate of Amendment',  fee:'$50',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'NH':{name:'New Hampshire', form:'Articles of Amendment', fee:'$35', processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'NJ':{name:'New Jersey', form:'Certificate of Amendment', fee:'$75',  processing:'5–10 days',  agency:'Treasury - DOR',     note:''},
+  'NM':{name:'New Mexico', form:'Articles of Amendment',   fee:'$25',   processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'NY':{name:'New York', form:'Certificate of Amendment',  fee:'$30',   processing:'2–3 weeks',  agency:'Department of State', note:'Attorney General Charities Bureau pre-approval required for charitable corporations.'},
+  'NC':{name:'North Carolina', form:'Articles of Amendment', fee:'$25', processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'ND':{name:'North Dakota', form:'Articles of Amendment', fee:'$50',  processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'OH':{name:'Ohio',     form:'Certificate of Amendment',  fee:'$50',   processing:'3–5 days',   agency:'Secretary of State', note:''},
+  'OK':{name:'Oklahoma', form:'Certificate of Amendment',  fee:'$35',   processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'OR':{name:'Oregon',   form:'Articles of Amendment',     fee:'$50',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'PA':{name:'Pennsylvania', form:'Articles of Amendment', fee:'$70',   processing:'2–3 weeks',  agency:'Department of State', note:''},
+  'RI':{name:'Rhode Island', form:'Articles of Amendment', fee:'$10',   processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'SC':{name:'South Carolina', form:'Articles of Amendment', fee:'$10', processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'SD':{name:'South Dakota', form:'Articles of Amendment', fee:'$60',   processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'TN':{name:'Tennessee', form:'Articles of Amendment',    fee:'$20',   processing:'3–5 days',   agency:'Secretary of State', note:''},
+  'TX':{name:'Texas',    form:'Certificate of Amendment',  fee:'$25',   processing:'5–7 days',   agency:'Secretary of State', note:''},
+  'UT':{name:'Utah',     form:'Articles of Amendment',     fee:'$30',   processing:'5–10 days',  agency:'Division of Corporations', note:''},
+  'VT':{name:'Vermont',  form:'Articles of Amendment',     fee:'$25',   processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'VA':{name:'Virginia', form:'Articles of Amendment',     fee:'$25',   processing:'5–10 days',  agency:'SCC',                note:''},
+  'WA':{name:'Washington', form:'Articles of Amendment',   fee:'$30',   processing:'7–10 days',  agency:'Secretary of State', note:''},
+  'WV':{name:'West Virginia', form:'Articles of Amendment', fee:'$25',  processing:'5–10 days',  agency:'Secretary of State', note:''},
+  'WI':{name:'Wisconsin',form:'Articles of Amendment',     fee:'$10',   processing:'5–7 days',   agency:'DFI',                note:''},
+  'WY':{name:'Wyoming',  form:'Articles of Amendment',     fee:'$60',   processing:'5–10 days',  agency:'Secretary of State', note:''}
+};
+
+const IRS_PATHS = {
+  '501c3': {
+    method:'Letter with next Form 990',
+    detail:'For 501(c)(3) public charities, the IRS does not require a separate filing for a name change. Attach a written notice (signed by an officer) to your next Form 990 / 990-EZ / 990-N. The IRS will update your record at that time. If you need a new IRS determination letter reflecting the new name BEFORE your next 990 is due, submit a written request to EO Determinations.',
+    forms:['Written notice attached to next 990','Optional: letter to EO Determinations for early update']
+  },
+  '501c4': {
+    method:'Form 8822-B or written notice',
+    detail:'501(c)(4) organizations (including most HOAs) should file Form 8822-B (Change of Address or Responsible Party) and check the name-change indicator OR file a written notice with their next Form 990. Many HOAs use both for completeness.',
+    forms:['Form 8822-B','Written notice attached to next 990']
+  },
+  '501c6': {
+    method:'Form 8822-B or written notice',
+    detail:'501(c)(6) business leagues should file Form 8822-B with the name-change indicator OR include a written notice with their next Form 990. Most file 8822-B to keep records current between filings.',
+    forms:['Form 8822-B','Written notice attached to next 990']
+  },
+  '501c7': {
+    method:'Form 8822-B or written notice',
+    detail:'501(c)(7) social and recreational clubs follow the same path as 501(c)(4) and (c)(6): Form 8822-B or written notice with next 990.',
+    forms:['Form 8822-B','Written notice attached to next 990']
+  },
+  'state-only': {
+    method:'No IRS notification yet required',
+    detail:'If your organization has not yet received an IRS determination letter, only the state filing is needed at this stage. When you eventually apply for tax-exempt status, use the new legal name on the application. Keep documentation of the name change for the application packet.',
+    forms:[]
+  },
+  'other': {
+    method:'Consult with tax counsel',
+    detail:'Other tax-exempt types (501(c)(5), (c)(8), (c)(10), etc.) generally use Form 8822-B for name updates. Confirm requirements with your tax advisor or the IRS Exempt Organizations division.',
+    forms:['Form 8822-B (most likely)','Written notice with next 990']
+  }
+};
+
+const NOTIFICATION_ITEMS = [
+  { id:'bank', cat:'Financial', label:'Bank — update account name and signature card', detail:'Bring board resolution, amended articles, and EIN letter to your branch.' },
+  { id:'irs-ein', cat:'Financial', label:'IRS EIN file — file Form 8822-B for responsible party / name', detail:'Even if you used the 990 attachment route, filing 8822-B keeps your EIN record current.' },
+  { id:'state-charity', cat:'Compliance', label:'State charitable solicitation registration — file an amendment', detail:'Most states require a name-change update within 30–90 days. See your state\'s charity bureau.' },
+  { id:'state-tax', cat:'Compliance', label:'State sales tax exemption certificate — update', detail:'Re-issue exemption certificate under the new name; some states require re-application.' },
+  { id:'state-employment', cat:'Compliance', label:'State employment / unemployment insurance accounts', detail:'Notify state workforce agency and unemployment insurance program.' },
+  { id:'dba', cat:'Compliance', label:'DBA / Fictitious Business Name (if any) — cancel or refile', detail:'If the organization had a DBA, decide whether to keep it under the new corporate name or retire it.' },
+  { id:'county-recorder', cat:'Compliance', label:'County recorder (HOAs only)', detail:'CC&Rs and recorded governing documents reference the original entity name. Record a name-change notice with the county recorder.' },
+  { id:'insurance', cat:'Insurance', label:'D&O insurance policy — endorsement for new name', detail:'Contact your broker for a name-change endorsement on D&O, general liability, and any other policies.' },
+  { id:'payroll', cat:'Operations', label:'Payroll provider — update legal name and W-2 source', detail:'New name will appear on W-2s and 1099s going forward. Confirm timing with payroll vendor.' },
+  { id:'401k', cat:'Operations', label:'Retirement plan documents (if any)', detail:'401(k) plan documents and Form 5500 filings reference the legal entity name.' },
+  { id:'vendors', cat:'Operations', label:'Vendor contracts and billing accounts', detail:'Notify all material vendors (utilities, SaaS, suppliers) for billing and contract continuity.' },
+  { id:'leases', cat:'Operations', label:'Real estate leases — landlord notification', detail:'Most leases require landlord notification of any entity name change; some require a formal amendment.' },
+  { id:'donors', cat:'Stakeholders', label:'Donors — announcement with new name and same EIN', detail:'Reassure donors that tax-deductible status is unchanged. The EIN does not change with a rename.' },
+  { id:'members', cat:'Stakeholders', label:'Members / residents (HOAs)', detail:'Issue formal notice to all members; for HOAs, include in next regular newsletter and posted notice.' },
+  { id:'grantors', cat:'Stakeholders', label:'Active grantors / foundation funders', detail:'Notify each active funder; many require formal acknowledgment to update grant agreements.' },
+  { id:'partners', cat:'Stakeholders', label:'Partner organizations and coalitions', detail:'Notify peer organizations, sponsors, and any coalitions you participate in.' },
+  { id:'website', cat:'Brand', label:'Website domain — update or register new', detail:'Decide whether to redirect old domain to a new one, or keep both with a transitional period.' },
+  { id:'social', cat:'Brand', label:'Social media handles — rename or migrate', detail:'Rename existing accounts where possible; cross-link old and new during transition.' },
+  { id:'email', cat:'Brand', label:'Email domain and signatures', detail:'Migrate staff to new email domain; set up forwarding from old domain for at least 1 year.' },
+  { id:'logos', cat:'Brand', label:'Logo, letterhead, business cards, signage', detail:'Refresh all printed and digital identity materials before public launch.' },
+  { id:'trademark', cat:'Brand', label:'Trademark search and registration (new name)', detail:'Conduct a USPTO TESS search; consider filing a trademark application for the new name.' },
+  { id:'press', cat:'Brand', label:'Press release announcing the name change', detail:'Issue a release explaining the change and reassuring stakeholders nothing else is changing.' }
+];
+
+const TRADEMARK_CHECKLIST = [
+  { id:'tess-search', label:'Search USPTO TESS database for existing trademarks on the new name', done:false },
+  { id:'state-search', label:'Search state business registries (Sec of State) for similar entity names', done:false },
+  { id:'domain-check', label:'Check domain availability for desktop URL(s)', done:false },
+  { id:'social-check', label:'Check social media handle availability across all major platforms', done:false },
+  { id:'google-check', label:'Google the new name to surface unrelated organizations / negative associations', done:false },
+  { id:'attorney-review', label:'Optional: have a trademark attorney run a clearance search', done:false },
+  { id:'register-domain', label:'Register primary domain (.org strongly preferred for nonprofits)', done:false },
+  { id:'register-domains-secondary', label:'Register secondary / defensive domains (.com, .net, common typos)', done:false },
+  { id:'reserve-social', label:'Reserve handles on Facebook, Instagram, LinkedIn, X/Twitter, YouTube', done:false },
+  { id:'file-trademark', label:'Optional: file USPTO trademark application (TEAS Plus or Standard)', done:false }
+];
+
+const RELATED_APPS = [
+  { id:'formation', name:'501(c)(3) Formation Assistant', icon:'🏛️', desc:'For state-only orgs filing 1023 with the new name after rename.', url:'https://501c3.buildyourclubacademy.org' },
+  { id:'compliance', name:'Compliance Tracker', icon:'🔐', desc:'Track post-rename filings (state charity, sales tax, etc.) by deadline.', url:'https://compliance.buildyourclubacademy.org' },
+  { id:'handbook', name:'Board Handbook', icon:'📕', desc:'Update bylaws and governance docs to reflect new name.', url:'https://handbook.buildyourclubacademy.org' },
+  { id:'donors', name:'Donor CRM', icon:'💝', desc:'Generate the donor announcement letter from your CRM contacts.', url:'https://donors.buildyourclubacademy.org' },
+  { id:'marketing', name:'Marketing', icon:'📣', desc:'Plan the rebrand launch campaign and press strategy.', url:'https://marketing.buildyourclubacademy.org' }
+];
+
+// ═════════════════════════════════════════════
+//  HELPERS
+// ═════════════════════════════════════════════
+let currentPage = 'dashboard';
+
+function teamData(){
+  const t = currentTeam();
+  if (!t) return null;
+  t.projects = t.projects || [];
+  t.activeProjectId = t.activeProjectId || null;
+  return t;
+}
+
+function newId(p){ return p + Date.now() + Math.floor(Math.random()*1000); }
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function nlToBr(s){ return escapeHtml(s||'').replace(/\n/g,'<br>'); }
+function fmtDate(d){ if(!d) return '—'; try { return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(e){ return d; } }
+
+function projects(){ const t = teamData(); return t ? t.projects : []; }
+function getProject(id){ const t = teamData(); if(!t) return null; return t.projects.find(p => p.id === id); }
+function activeProject(){ const t = teamData(); if(!t) return null; return t.projects.find(p => p.id === t.activeProjectId) || null; }
+function setActiveProject(id){ const t = teamData(); if(!t) return; t.activeProjectId = id; save(); }
+
+function createProject(seed){
+  const t = teamData(); if(!t) return null;
+  const p = {
+    id: newId('rn-'),
+    name: (seed && seed.name) || 'Untitled Rename',
+    entityType: (seed && seed.entityType) || '501c3',
+    scenario: (seed && seed.scenario) || '',
+    state: (seed && seed.state) || '',
+    oldName: (seed && seed.oldName) || '',
+    newName: (seed && seed.newName) || '',
+    ein: (seed && seed.ein) || '',
+    formationDate: '', incorporationState: '',
+    boardVoteDate: '', effectiveDate: '',
+    rationale: '',
+    signatoryName: '', signatoryTitle: '',
+    address: '', city: '', stateAbbr: '', zip: '',
+    status: 'planning',
+    notifications: {}, // {id: {done:bool, doneDate:''}}
+    trademark: {},     // {id: {done:bool, notes:''}}
+    notes: '',
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+  };
+  t.projects.push(p);
+  t.activeProjectId = p.id;
+  save();
+  return p;
+}
+function updateProject(id, patch){ const t = teamData(); if(!t) return; const p = t.projects.find(x => x.id === id); if(p){ Object.assign(p, patch); p.updatedAt = new Date().toISOString(); save(); } }
+function deleteProject(id){ const t = teamData(); if(!t) return; t.projects = t.projects.filter(p => p.id !== id); if (t.activeProjectId === id) t.activeProjectId = t.projects[0] ? t.projects[0].id : null; save(); }
+
+function projectStatusLabel(s){ return { planning:'Planning', 'board-vote':'Board vote', 'state-filing':'State filing', 'irs-notification':'IRS notice', notifications:'Notifications', complete:'Complete' }[s] || s; }
+function scenarioLabel(id){ const s = SCENARIOS.find(x => x.id === id); return s ? s.label : id; }
+function scenarioIcon(id){ const s = SCENARIOS.find(x => x.id === id); return s ? s.icon : '📋'; }
+function entityTypeLabel(id){ const e = ENTITY_TYPES.find(x => x.id === id); return e ? e.label : id; }
+
+function progressPct(p){
+  if (!p) return 0;
+  let done = 0, total = 6;
+  if (p.boardVoteDate) done++;
+  if (p.status === 'state-filing' || p.status === 'irs-notification' || p.status === 'notifications' || p.status === 'complete') done++;
+  if (p.status === 'irs-notification' || p.status === 'notifications' || p.status === 'complete') done++;
+  const notif = p.notifications || {};
+  const notifDone = Object.values(notif).filter(x => x && x.done).length;
+  if (notifDone > 5) done++;
+  if (notifDone > 12) done++;
+  if (p.status === 'complete') done++;
+  return Math.min(100, Math.round((done/total)*100));
+}
+
+// ═════════════════════════════════════════════
+//  NAVIGATE
+// ═════════════════════════════════════════════
+function navigate(target){
+  const pages = ['dashboard','projects','new','project','state','irs','notify','trademark','documents','summary','history','analytics','team','settings','admin'];
+  pages.forEach(p => {
+    const el = document.getElementById('page-'+p);
+    if (el) el.classList.toggle('hidden', p !== target);
+    const nav = document.getElementById('nav-'+p);
+    if (nav) nav.classList.toggle('active', p === target);
+  });
+  currentPage = target;
+  const renderers = {
+    dashboard: renderDashboard, projects: renderProjects, new: renderNew,
+    project: renderProject, state: renderState, irs: renderIrs,
+    notify: renderNotify, trademark: renderTrademark,
+    documents: renderDocuments, summary: renderSummary,
+    history: renderHistory, analytics: renderAnalytics, team: renderTeam,
+    settings: renderSettings, admin: renderAdmin
+  };
+  if (renderers[target]) renderers[target]();
+  const back = document.getElementById('back-to-dash');
+  if (back) back.style.display = (target === 'dashboard' || target === 'admin') ? 'none' : 'flex';
+  window.scrollTo(0,0);
+}
+
+// ═════════════════════════════════════════════
+//  SEED
+// ═════════════════════════════════════════════
+function seedRenameForTeam(team){
+  if (!team) return;
+  team.projects = team.projects || [];
+  if (team.projects.length === 0){
+    team.projects.push({
+      id:'rn-demo-1',
+      name:'Sunset Ridge HOA Rebrand',
+      entityType:'501c4',
+      scenario:'hoa',
+      state:'CA',
+      oldName:'Builder XYZ Sunset Ridge Homeowners Association, Inc.',
+      newName:'Sunset Ridge Community Association',
+      ein:'88-1234567',
+      formationDate:'2018-06-15', incorporationState:'CA',
+      boardVoteDate:'2026-04-22', effectiveDate:'2026-08-01',
+      rationale:'Builder turned the HOA over to homeowners in 2025. The new board wants to rebrand under a community-led name and refresh all governance materials.',
+      signatoryName:'Pat Garcia', signatoryTitle:'Board President',
+      address:'2200 Sunset Ridge Dr', city:'San Diego', stateAbbr:'CA', zip:'92127',
+      status:'state-filing',
+      notifications:{ 'bank':{done:true, doneDate:'2026-05-01'}, 'irs-ein':{done:false}, 'donors':{done:false}, 'members':{done:true, doneDate:'2026-05-15'} },
+      trademark:{ 'tess-search':{done:true}, 'state-search':{done:true}, 'domain-check':{done:false} },
+      notes:'Board unanimous vote 4/22. Filing with CA Sec of State this week.',
+      createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
+    });
+    team.activeProjectId = 'rn-demo-1';
+  }
+}
+
+// ═════════════════════════════════════════════
+//  TEAM PAGE (compatibility — preserved from donor scaffold pattern)
+// ═════════════════════════════════════════════
+function renderTeam(){
+  const t = currentTeam(); if (!t){ document.getElementById('page-team').innerHTML = '<div class="empty-state">No team.</div>'; return; }
+  const members = Object.entries(t.members||{}).map(([email, role]) => ({ email, role, name: (state.users[email] && state.users[email].name) || email }));
+  document.getElementById('page-team').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">Team</h1><p class="page-sub">${members.length} member${members.length===1?'':'s'}. Team code: <strong>${t.id}</strong></p></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Members</div>
+      ${members.map(m => `<div class="dl-row"><div style="flex:1"><div style="font-weight:600;color:var(--navy)">${escapeHtml(m.name)}</div><div style="font-size:12px;color:var(--muted)">${escapeHtml(m.email)} · ${m.role}</div></div></div>`).join('')}
+    </div>
+  `;
+}
+
+function renderHistory(){
+  const t = currentTeam(); if (!t){ document.getElementById('page-history').innerHTML='<div class="empty-state">No team.</div>'; return; }
+  const list = t.history || [];
+  document.getElementById('page-history').innerHTML = `
+    <div class="page-header"><div><h1 class="page-title">History</h1><p class="page-sub">${list.length} event${list.length===1?'':'s'}</p></div></div>
+    <div class="section">${list.length===0 ? '<div class="empty-state">No activity logged yet.</div>' : list.map(e => `<div class="dl-row"><div style="flex:1"><div style="font-weight:600;color:var(--navy)">${escapeHtml(e.what||e.label||'Event')}</div><div style="font-size:12px;color:var(--muted)">${fmtDate(e.when)} · ${escapeHtml(e.by||'')}</div></div></div>`).join('')}</div>
+  `;
+}
+
+function renderAnalytics(){
+  const t = teamData(); if (!t){ document.getElementById('page-analytics').innerHTML='<div class="empty-state">No team.</div>'; return; }
+  const list = t.projects || [];
+  const byStatus = {};
+  list.forEach(p => { byStatus[p.status] = (byStatus[p.status]||0)+1; });
+  document.getElementById('page-analytics').innerHTML = `
+    <div class="page-header"><div><h1 class="page-title">Analytics</h1><p class="page-sub">Rename project portfolio</p></div></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total projects</div><div class="stat-num">${list.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Complete</div><div class="stat-num">${byStatus['complete']||0}</div></div>
+      <div class="stat-card"><div class="stat-label">In progress</div><div class="stat-num">${list.length - (byStatus['complete']||0)}</div></div>
+    </div>
+    <div class="section"><div class="section-title">By status</div>
+      ${PROJECT_STATUSES.map(s => `<div class="dl-row"><div style="flex:1">${projectStatusLabel(s)}</div><div style="font-weight:700;color:var(--teal)">${byStatus[s]||0}</div></div>`).join('')}
+    </div>
+  `;
+}
+
+function renderAdmin(){
+  if (!isSuperAdmin()){ document.getElementById('page-admin').innerHTML='<div class="empty-state">Admin access required.</div>'; return; }
+  const teams = Object.values(state.teams||{});
+  document.getElementById('page-admin').innerHTML = `
+    <div class="page-header"><div><h1 class="page-title">Admin</h1><p class="page-sub">${teams.length} team${teams.length===1?'':'s'} · ${Object.keys(state.users||{}).length} users</p></div></div>
+    <div class="section">${teams.map(t => `<div class="dl-row"><div style="flex:1"><div style="font-weight:700;color:var(--navy)">${escapeHtml(t.profile.orgName||'(Team)')}</div><div style="font-size:12px;color:var(--muted)">Code: ${t.id} · ${Object.keys(t.members||{}).length} member(s) · ${(t.projects||[]).length} project(s)</div></div></div>`).join('')}</div>
+  `;
+}
+
+
+
+// ═════════════════════════════════════════════
+//  DASHBOARD
+// ═════════════════════════════════════════════
+function renderDashboard(){
+  const t = teamData(); if(!t){ document.getElementById('page-dashboard').innerHTML='<div class="empty-state">No team.</div>'; return; }
+  const list = t.projects || [];
+  const active = activeProject();
+  const inProgress = list.filter(p => p.status !== 'complete').length;
+  const completed = list.filter(p => p.status === 'complete').length;
+
+  const relCards = RELATED_APPS.slice(0,3).map(r => `
+    <a class="rel-card" href="${r.url}" target="_blank" rel="noopener noreferrer">
+      <div class="rel-icon">${r.icon}</div>
+      <div class="rel-body">
+        <div class="rel-title">${escapeHtml(r.name)}</div>
+        <div class="rel-desc">${escapeHtml(r.desc)}</div>
+      </div>
+    </a>
+  `).join('');
+
+  document.getElementById('page-dashboard').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">Dashboard</h1><p class="page-sub">Plan and execute a nonprofit name change end-to-end.</p></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" style="background:var(--red);color:#fff" onclick="window.open('Guide.html','_blank')">📖 Guide</button>
+        <button class="btn btn-teal" onclick="navigate('new')">+ Start a Rename</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Projects</div><div class="stat-num">${list.length}</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card"><div class="stat-label">In progress</div><div class="stat-num">${inProgress}</div><div class="stat-sub">Active renames</div></div>
+      <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-num">${completed}</div><div class="stat-sub">Finished renames</div></div>
+      <div class="stat-card"><div class="stat-label">Active project</div><div class="stat-num" style="font-size:18px;line-height:1.3">${active ? escapeHtml(active.newName||active.oldName||active.name) : '—'}</div><div class="stat-sub">${active ? projectStatusLabel(active.status) : 'None selected'}</div></div>
+    </div>
+
+    ${active ? `
+      <div class="section">
+        <div class="section-title">Active project progress <span class="badge badge-blue">${progressPct(active)}%</span></div>
+        <div style="height:10px;background:var(--light);border-radius:5px;overflow:hidden;margin-bottom:12px"><div style="height:100%;background:var(--teal);width:${progressPct(active)}%"></div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+          <div onclick="navigate('project')" style="padding:14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:#fff"><div style="font-weight:700;color:var(--navy);font-size:13px">📄 Project Overview</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Edit core info, board vote, signatory</div></div>
+          <div onclick="navigate('state')" style="padding:14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:#fff"><div style="font-weight:700;color:var(--navy);font-size:13px">🏛️ State Filing</div><div style="font-size:12px;color:var(--muted);margin-top:4px">${active.state ? STATE_DATA[active.state].name + ' · ' + STATE_DATA[active.state].fee : 'Pick your state'}</div></div>
+          <div onclick="navigate('irs')" style="padding:14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:#fff"><div style="font-weight:700;color:var(--navy);font-size:13px">🔐 IRS Notification</div><div style="font-size:12px;color:var(--muted);margin-top:4px">${IRS_PATHS[active.entityType] ? IRS_PATHS[active.entityType].method : '—'}</div></div>
+          <div onclick="navigate('notify')" style="padding:14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:#fff"><div style="font-weight:700;color:var(--navy);font-size:13px">📬 Notification Checklist</div><div style="font-size:12px;color:var(--muted);margin-top:4px">${Object.values(active.notifications||{}).filter(n => n && n.done).length} of ${NOTIFICATION_ITEMS.length} done</div></div>
+          <div onclick="navigate('trademark')" style="padding:14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:#fff"><div style="font-weight:700;color:var(--navy);font-size:13px">™️ Brand &amp; Trademark</div><div style="font-size:12px;color:var(--muted);margin-top:4px">${Object.values(active.trademark||{}).filter(n => n && n.done).length} of ${TRADEMARK_CHECKLIST.length} done</div></div>
+          <div onclick="navigate('documents')" style="padding:14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:#fff"><div style="font-weight:700;color:var(--navy);font-size:13px">📥 Documents</div><div style="font-size:12px;color:var(--muted);margin-top:4px">Generate all 9 templates</div></div>
+        </div>
+      </div>
+    ` : `
+      <div class="section">
+        <div class="section-title">Get started</div>
+        <p style="font-size:14px;color:var(--text)">No active project yet. Click <strong>+ Start a Rename</strong> above to walk through the wizard for a new project.</p>
+      </div>
+    `}
+
+    <div class="section">
+      <div class="section-title">Related apps in your suite</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">A rename touches multiple operational areas — use these other Build Your Club apps in parallel:</p>
+      <div class="rel-grid">${relCards}</div>
+    </div>
+
+    <style>
+      .rel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+      .rel-card{display:flex;gap:12px;padding:14px;border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);transition:.15s;background:#fff}
+      .rel-card:hover{border-color:var(--teal);transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.04)}
+      .rel-icon{font-size:22px;line-height:1;flex-shrink:0}
+      .rel-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px}
+      .rel-desc{font-size:11px;color:var(--muted);line-height:1.4}
+    </style>
+  `;
+}
+
+// ═════════════════════════════════════════════
+//  PROJECTS LIST
+// ═════════════════════════════════════════════
+function renderProjects(){
+  const t = teamData(); if(!t){ document.getElementById('page-projects').innerHTML='<div class="empty-state">No team.</div>'; return; }
+  const list = (t.projects||[]).slice().sort((a,b) => (b.updatedAt||'').localeCompare(a.updatedAt||''));
+  document.getElementById('page-projects').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">My Renames</h1><p class="page-sub">${list.length} project${list.length===1?'':'s'}</p></div>
+      <button class="btn btn-teal" onclick="navigate('new')">+ Start a Rename</button>
+    </div>
+    ${list.length===0 ? '<div class="empty-state">No projects yet. Start your first rename to begin.</div>' : list.map(p => `
+      <div class="section" style="cursor:pointer" onclick="setActiveProject('${p.id}'); navigate('project')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
+          <div style="flex:1">
+            <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px">${escapeHtml(p.newName || p.name || '(Untitled)')}</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${p.oldName ? 'Renaming from ' + escapeHtml(p.oldName) : '(No previous name set)'}</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px">
+              <span style="background:var(--light);color:var(--navy);padding:3px 10px;border-radius:6px;font-weight:600">${scenarioIcon(p.scenario)} ${scenarioLabel(p.scenario) || 'No scenario'}</span>
+              <span style="background:var(--light);color:var(--navy);padding:3px 10px;border-radius:6px;font-weight:600">${entityTypeLabel(p.entityType)}</span>
+              <span style="background:var(--light);color:var(--navy);padding:3px 10px;border-radius:6px;font-weight:600">${p.state ? STATE_DATA[p.state].name : 'No state'}</span>
+              <span class="badge ${p.status==='complete'?'badge-green':'badge-amber'}">${projectStatusLabel(p.status)}</span>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-weight:700;color:var(--teal);font-size:22px">${progressPct(p)}%</div>
+            <div style="font-size:11px;color:var(--muted)">complete</div>
+          </div>
+        </div>
+        <div style="height:6px;background:var(--light);border-radius:3px;overflow:hidden;margin-top:12px"><div style="height:100%;background:var(--teal);width:${progressPct(p)}%"></div></div>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ═════════════════════════════════════════════
+//  START A RENAME (wizard)
+// ═════════════════════════════════════════════
+function renderNew(){
+  const html = `
+    <div class="page-header">
+      <div><h1 class="page-title">Start a Rename</h1><p class="page-sub">Pick the scenario that fits your situation. You can change any of this later.</p></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1. Choose your scenario</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+        ${SCENARIOS.map(s => `
+          <div onclick="startProjectWithScenario('${s.id}')" style="padding:18px;border:2px solid var(--border);border-radius:12px;cursor:pointer;background:#fff;transition:.15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:28px;margin-bottom:6px">${s.icon}</div>
+            <div style="font-weight:700;color:var(--navy);font-size:15px;margin-bottom:4px">${escapeHtml(s.label)}</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5">${escapeHtml(s.desc)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Or skip the scenario picker</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Create a project without choosing a scenario yet — you can pick one later from the Project Overview page.</p>
+      <button class="btn btn-outline" onclick="startProjectWithScenario('')">Start blank project</button>
+    </div>
+  `;
+  document.getElementById('page-new').innerHTML = html;
+}
+
+function startProjectWithScenario(scenarioId){
+  const p = createProject({ name: scenarioId ? scenarioLabel(scenarioId) + ' project' : 'New rename project', scenario: scenarioId });
+  navigate('project');
+}
+
+// ═════════════════════════════════════════════
+//  PROJECT OVERVIEW
+// ═════════════════════════════════════════════
+function renderProject(){
+  const p = activeProject();
+  if (!p){ document.getElementById('page-project').innerHTML = `<div class="empty-state">No active project. <button class="btn btn-teal" style="margin-top:10px" onclick="navigate('projects')">View projects</button></div>`; return; }
+
+  const entityOpts = ENTITY_TYPES.map(e => `<option value="${e.id}" ${p.entityType===e.id?'selected':''}>${escapeHtml(e.label)}</option>`).join('');
+  const scenarioOpts = ['<option value="">— Select scenario —</option>'].concat(SCENARIOS.map(s => `<option value="${s.id}" ${p.scenario===s.id?'selected':''}>${s.icon} ${escapeHtml(s.label)}</option>`)).join('');
+  const stateOpts = ['<option value="">— Select state —</option>'].concat(Object.entries(STATE_DATA).map(([code,d]) => `<option value="${code}" ${p.state===code?'selected':''}>${escapeHtml(d.name)}</option>`)).join('');
+  const statusOpts = PROJECT_STATUSES.map(s => `<option value="${s}" ${p.status===s?'selected':''}>${projectStatusLabel(s)}</option>`).join('');
+
+  document.getElementById('page-project').innerHTML = `
+    <div class="page-header">
+      <div>
+        <button class="btn btn-ghost" onclick="navigate('projects')" style="padding:6px 12px;font-size:13px">← All projects</button>
+        <h1 class="page-title" style="margin-top:8px">${escapeHtml(p.newName || p.name)}</h1>
+        <p class="page-sub">${scenarioIcon(p.scenario)} ${scenarioLabel(p.scenario) || 'No scenario'} · ${progressPct(p)}% complete</p>
+      </div>
+      <button class="btn" style="background:var(--red);color:#fff" onclick="if(confirm('Delete this project?')){deleteProject('${p.id}'); navigate('projects');}">🗑 Delete</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Project basics</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field"><label>Project Name (internal)</label><input value="${escapeHtml(p.name||'')}" onchange="updateProject('${p.id}',{name:this.value})"/></div>
+        <div class="field"><label>Status</label><select onchange="updateProject('${p.id}',{status:this.value})">${statusOpts}</select></div>
+        <div class="field"><label>Scenario</label><select onchange="updateProject('${p.id}',{scenario:this.value}); renderProject()">${scenarioOpts}</select></div>
+        <div class="field"><label>Entity Type</label><select onchange="updateProject('${p.id}',{entityType:this.value}); renderProject()">${entityOpts}</select></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Legal name change</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field"><label>Current Legal Name (full)</label><input value="${escapeHtml(p.oldName||'')}" onchange="updateProject('${p.id}',{oldName:this.value}); renderProject()"/></div>
+        <div class="field"><label>Proposed New Legal Name (full)</label><input value="${escapeHtml(p.newName||'')}" onchange="updateProject('${p.id}',{newName:this.value}); renderProject()"/></div>
+        <div class="field"><label>EIN (Federal Tax ID)</label><input value="${escapeHtml(p.ein||'')}" placeholder="00-0000000" onchange="updateProject('${p.id}',{ein:this.value})"/></div>
+        <div class="field"><label>State of Incorporation</label><select onchange="updateProject('${p.id}',{state:this.value, incorporationState:this.value}); renderProject()">${stateOpts}</select></div>
+        <div class="field"><label>Original Formation Date</label><input type="date" value="${escapeHtml(p.formationDate||'')}" onchange="updateProject('${p.id}',{formationDate:this.value})"/></div>
+        <div class="field"><label>Effective Date (when new name takes effect)</label><input type="date" value="${escapeHtml(p.effectiveDate||'')}" onchange="updateProject('${p.id}',{effectiveDate:this.value})"/></div>
+        <div class="field" style="grid-column:1/-1"><label>Rationale for the Change</label><textarea onchange="updateProject('${p.id}',{rationale:this.value})">${escapeHtml(p.rationale||'')}</textarea></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Board approval</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+        <div class="field"><label>Board Vote Date</label><input type="date" value="${escapeHtml(p.boardVoteDate||'')}" onchange="updateProject('${p.id}',{boardVoteDate:this.value})"/></div>
+        <div class="field"><label>Authorized Signatory Name</label><input value="${escapeHtml(p.signatoryName||'')}" onchange="updateProject('${p.id}',{signatoryName:this.value})"/></div>
+        <div class="field"><label>Signatory Title</label><input value="${escapeHtml(p.signatoryTitle||'')}" onchange="updateProject('${p.id}',{signatoryTitle:this.value})"/></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Organization address</div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px">
+        <div class="field"><label>Street</label><input value="${escapeHtml(p.address||'')}" onchange="updateProject('${p.id}',{address:this.value})"/></div>
+        <div class="field"><label>City</label><input value="${escapeHtml(p.city||'')}" onchange="updateProject('${p.id}',{city:this.value})"/></div>
+        <div class="field"><label>State</label><input value="${escapeHtml(p.stateAbbr||'')}" onchange="updateProject('${p.id}',{stateAbbr:this.value})"/></div>
+        <div class="field"><label>ZIP</label><input value="${escapeHtml(p.zip||'')}" onchange="updateProject('${p.id}',{zip:this.value})"/></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Notes</div>
+      <div class="field"><textarea onchange="updateProject('${p.id}',{notes:this.value})">${escapeHtml(p.notes||'')}</textarea></div>
+    </div>
+  `;
+}
+
+// ═════════════════════════════════════════════
+//  STATE FILING PAGE
+// ═════════════════════════════════════════════
+function renderState(){
+  const p = activeProject();
+  if (!p){ document.getElementById('page-state').innerHTML = `<div class="empty-state">Open a project first. <button class="btn btn-teal" style="margin-top:10px" onclick="navigate('projects')">View projects</button></div>`; return; }
+
+  const sd = p.state && STATE_DATA[p.state];
+  const allStates = Object.entries(STATE_DATA).map(([code,d]) => `<tr ${code===p.state?'style="background:rgba(42,123,111,.08)"':''} onclick="updateProject('${p.id}',{state:'${code}'}); renderState()" style="cursor:pointer"><td><strong>${escapeHtml(d.name)}</strong></td><td>${escapeHtml(d.form)}</td><td>${escapeHtml(d.fee)}</td><td>${escapeHtml(d.processing)}</td><td>${escapeHtml(d.agency)}</td></tr>`).join('');
+
+  document.getElementById('page-state').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">State Filing</h1><p class="page-sub">Articles of Amendment specifics by state</p></div>
+    </div>
+
+    ${sd ? `
+      <div class="section" style="background:#FAF6E8;border:1px solid #E5D599">
+        <div class="section-title">${escapeHtml(sd.name)} requirements</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Form name</div><div style="font-weight:700;color:var(--navy);margin-top:4px">${escapeHtml(sd.form)}</div></div>
+          <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Filing fee</div><div style="font-weight:700;color:var(--navy);margin-top:4px">${escapeHtml(sd.fee)}</div></div>
+          <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Processing time</div><div style="font-weight:700;color:var(--navy);margin-top:4px">${escapeHtml(sd.processing)}</div></div>
+          <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Filing agency</div><div style="font-weight:700;color:var(--navy);margin-top:4px">${escapeHtml(sd.agency)}</div></div>
+        </div>
+        ${sd.note ? `<div style="margin-top:14px;padding:12px;background:#fff;border-left:3px solid var(--gold);font-size:13px"><strong>Note:</strong> ${escapeHtml(sd.note)}</div>` : ''}
+        <div style="margin-top:14px"><button class="btn btn-teal" onclick="navigate('documents')">📥 Generate Articles of Amendment →</button></div>
+      </div>
+    ` : '<div class="section"><div class="empty-state">Pick your state below to see specific filing requirements.</div></div>'}
+
+    <div class="section">
+      <div class="section-title">All 50 states + DC</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Click any row to set your project state.</p>
+      <table style="font-size:13px"><thead><tr><th>State</th><th>Form</th><th>Fee</th><th>Processing</th><th>Agency</th></tr></thead><tbody>${allStates}</tbody></table>
+    </div>
+  `;
+}
+
+// ═════════════════════════════════════════════
+//  IRS NOTIFICATION
+// ═════════════════════════════════════════════
+function renderIrs(){
+  const p = activeProject();
+  if (!p){ document.getElementById('page-irs').innerHTML = `<div class="empty-state">Open a project first.</div>`; return; }
+  const path = IRS_PATHS[p.entityType] || IRS_PATHS['other'];
+  document.getElementById('page-irs').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">IRS Notification</h1><p class="page-sub">Federal tax-exempt records — the path depends on your entity type</p></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Your entity type: ${escapeHtml(entityTypeLabel(p.entityType))}</div>
+      <p style="font-size:14px;color:var(--text);margin-bottom:14px"><strong>Notification method:</strong> ${escapeHtml(path.method)}</p>
+      <p style="font-size:14px;line-height:1.7;color:var(--text)">${escapeHtml(path.detail)}</p>
+    </div>
+
+    ${path.forms.length > 0 ? `
+      <div class="section">
+        <div class="section-title">Forms / documents you'll need</div>
+        <ul style="margin-left:24px">${path.forms.map(f => `<li style="margin-bottom:8px">${escapeHtml(f)}</li>`).join('')}</ul>
+        <button class="btn btn-teal" style="margin-top:10px" onclick="navigate('documents')">📥 Generate IRS Notification Letter →</button>
+      </div>
+    ` : ''}
+
+    <div class="section">
+      <div class="section-title">Reference: all paths by entity type</div>
+      <table>
+        <thead><tr><th>Entity Type</th><th>Method</th></tr></thead>
+        <tbody>${Object.entries(IRS_PATHS).map(([id,info]) => `<tr><td>${escapeHtml(entityTypeLabel(id))}</td><td>${escapeHtml(info.method)}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ═════════════════════════════════════════════
+//  NOTIFICATION CHECKLIST
+// ═════════════════════════════════════════════
+function renderNotify(){
+  const p = activeProject();
+  if (!p){ document.getElementById('page-notify').innerHTML = `<div class="empty-state">Open a project first.</div>`; return; }
+  const notif = p.notifications || {};
+
+  const grouped = {};
+  NOTIFICATION_ITEMS.forEach(item => { if(!grouped[item.cat]) grouped[item.cat] = []; grouped[item.cat].push(item); });
+
+  const total = NOTIFICATION_ITEMS.length;
+  const done = NOTIFICATION_ITEMS.filter(i => notif[i.id] && notif[i.id].done).length;
+
+  document.getElementById('page-notify').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">Notification Checklist</h1><p class="page-sub">${done} of ${total} complete · Who and what to notify after a name change</p></div>
+      <button class="btn btn-teal" onclick="navigate('documents')">📥 Export checklist as .docx</button>
+    </div>
+
+    ${Object.entries(grouped).map(([cat, items]) => `
+      <div class="section">
+        <div class="section-title">${cat} <span class="badge badge-blue">${items.filter(i => notif[i.id] && notif[i.id].done).length}/${items.length}</span></div>
+        ${items.map(item => {
+          const state = notif[item.id] || {};
+          return `
+            <div class="dl-row">
+              <input type="checkbox" ${state.done?'checked':''} onchange="toggleNotif('${p.id}','${item.id}',this.checked)" style="width:20px;height:20px;flex-shrink:0"/>
+              <div style="flex:1">
+                <div style="font-weight:600;color:var(--navy)">${escapeHtml(item.label)}</div>
+                <div style="font-size:12px;color:var(--muted);margin-top:2px">${escapeHtml(item.detail)}</div>
+                ${state.done && state.doneDate ? `<div style="font-size:11px;color:var(--green);font-weight:600;margin-top:4px">✓ Completed ${fmtDate(state.doneDate)}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `).join('')}
+  `;
+}
+
+function toggleNotif(pid, itemId, done){
+  const p = getProject(pid); if(!p) return;
+  p.notifications = p.notifications || {};
+  p.notifications[itemId] = { done, doneDate: done ? new Date().toISOString().slice(0,10) : '' };
+  save();
+  renderNotify();
+}
+
+// ═════════════════════════════════════════════
+//  TRADEMARK / BRAND CHECKLIST
+// ═════════════════════════════════════════════
+function renderTrademark(){
+  const p = activeProject();
+  if (!p){ document.getElementById('page-trademark').innerHTML = `<div class="empty-state">Open a project first.</div>`; return; }
+  const tm = p.trademark || {};
+  const done = TRADEMARK_CHECKLIST.filter(i => tm[i.id] && tm[i.id].done).length;
+
+  document.getElementById('page-trademark').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">Brand &amp; Trademark</h1><p class="page-sub">${done} of ${TRADEMARK_CHECKLIST.length} complete · Clearance, domain, and trademark steps for your new name</p></div>
+    </div>
+
+    <div class="section">
+      ${TRADEMARK_CHECKLIST.map(item => {
+        const state = tm[item.id] || {};
+        return `
+          <div class="dl-row">
+            <input type="checkbox" ${state.done?'checked':''} onchange="toggleTm('${p.id}','${item.id}',this.checked)" style="width:20px;height:20px;flex-shrink:0"/>
+            <div style="flex:1">
+              <div style="font-weight:600;color:var(--navy)">${escapeHtml(item.label)}</div>
+              <div class="field" style="margin-top:6px;margin-bottom:0"><input placeholder="Notes (results, links, dates)" value="${escapeHtml(state.notes||'')}" onchange="updateTmNote('${p.id}','${item.id}',this.value)"/></div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="section">
+      <div class="section-title">Helpful links</div>
+      <ul style="margin-left:24px">
+        <li><a href="https://tmsearch.uspto.gov" target="_blank">USPTO TESS trademark search</a></li>
+        <li><a href="https://www.uspto.gov/trademarks/apply" target="_blank">USPTO trademark application (TEAS Plus / Standard)</a></li>
+        <li><a href="https://www.namechk.com" target="_blank">Namechk — check handle availability across social platforms</a></li>
+        <li><a href="https://www.cloudflare.com/products/registrar/" target="_blank">Cloudflare Registrar — at-cost domain registration</a></li>
+      </ul>
+    </div>
+  `;
+}
+function toggleTm(pid, itemId, done){
+  const p = getProject(pid); if(!p) return;
+  p.trademark = p.trademark || {};
+  p.trademark[itemId] = Object.assign({}, p.trademark[itemId]||{}, { done });
+  save(); renderTrademark();
+}
+function updateTmNote(pid, itemId, notes){
+  const p = getProject(pid); if(!p) return;
+  p.trademark = p.trademark || {};
+  p.trademark[itemId] = Object.assign({}, p.trademark[itemId]||{}, { notes });
+  save();
+}
+
+// ═════════════════════════════════════════════
+//  SUMMARY
+// ═════════════════════════════════════════════
+function renderSummary(){
+  const p = activeProject();
+  if (!p){ document.getElementById('page-summary').innerHTML = `<div class="empty-state">Open a project first.</div>`; return; }
+  const notifDone = Object.values(p.notifications||{}).filter(n => n && n.done).length;
+  const tmDone = Object.values(p.trademark||{}).filter(n => n && n.done).length;
+
+  document.getElementById('page-summary').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">Project Summary</h1><p class="page-sub">A one-page overview of where this rename project stands</p></div>
+      <button class="btn btn-teal" onclick="exportSummaryHtml()">👁 Preview as HTML</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Identity</div>
+      <table>
+        <tr><td><strong>Old name</strong></td><td>${escapeHtml(p.oldName || '—')}</td></tr>
+        <tr><td><strong>New name</strong></td><td>${escapeHtml(p.newName || '—')}</td></tr>
+        <tr><td><strong>Entity type</strong></td><td>${escapeHtml(entityTypeLabel(p.entityType))}</td></tr>
+        <tr><td><strong>Scenario</strong></td><td>${scenarioIcon(p.scenario)} ${scenarioLabel(p.scenario) || '—'}</td></tr>
+        <tr><td><strong>EIN</strong></td><td>${escapeHtml(p.ein || '—')}</td></tr>
+        <tr><td><strong>State of incorporation</strong></td><td>${p.state ? escapeHtml(STATE_DATA[p.state].name) : '—'}</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Progress</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Status</div><div style="font-weight:700;color:var(--navy);margin-top:4px">${projectStatusLabel(p.status)}</div></div>
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Board vote</div><div style="font-weight:700;color:var(--navy);margin-top:4px">${p.boardVoteDate ? fmtDate(p.boardVoteDate) : 'Pending'}</div></div>
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Notifications</div><div style="font-weight:700;color:var(--navy);margin-top:4px">${notifDone}/${NOTIFICATION_ITEMS.length}</div></div>
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Brand &amp; trademark</div><div style="font-weight:700;color:var(--navy);margin-top:4px">${tmDone}/${TRADEMARK_CHECKLIST.length}</div></div>
+        <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600">Overall</div><div style="font-weight:700;color:var(--teal);margin-top:4px;font-size:18px">${progressPct(p)}%</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Rationale</div>
+      <p style="font-size:14px;line-height:1.7">${nlToBr(p.rationale) || '<em style="color:var(--muted)">No rationale documented yet.</em>'}</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Notes</div>
+      <p style="font-size:14px;line-height:1.7">${nlToBr(p.notes) || '<em style="color:var(--muted)">No notes.</em>'}</p>
+    </div>
+  `;
+}
+
+function exportSummaryHtml(){
+  const p = activeProject(); if(!p) return;
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(p.newName||p.name)} — Project Summary</title><style>body{font-family:Georgia,serif;max-width:780px;margin:30px auto;padding:40px;line-height:1.6;color:#222}h1{color:#1B3A5C;font-size:30px}h2{color:#1B3A5C;font-size:18px;margin-top:24px;border-bottom:2px solid #2A7B6F;padding-bottom:6px}.label{font-size:11px;color:#666;text-transform:uppercase;font-weight:600}p{margin-bottom:10px}</style></head><body>
+    <h1>${escapeHtml(p.newName || p.name)}</h1>
+    <p style="color:#666">Name Change Project Summary · Generated ${new Date().toLocaleDateString('en-US')}</p>
+    <h2>Identity</h2>
+    <p><strong>Old name:</strong> ${escapeHtml(p.oldName||'—')}<br><strong>New name:</strong> ${escapeHtml(p.newName||'—')}<br><strong>Entity type:</strong> ${escapeHtml(entityTypeLabel(p.entityType))}<br><strong>Scenario:</strong> ${scenarioLabel(p.scenario)||'—'}<br><strong>EIN:</strong> ${escapeHtml(p.ein||'—')}<br><strong>State:</strong> ${p.state?escapeHtml(STATE_DATA[p.state].name):'—'}</p>
+    <h2>Rationale</h2>
+    <p>${nlToBr(p.rationale)||'—'}</p>
+    <h2>Progress</h2>
+    <p><strong>Status:</strong> ${projectStatusLabel(p.status)}<br><strong>Board vote:</strong> ${p.boardVoteDate?fmtDate(p.boardVoteDate):'Pending'}<br><strong>Overall progress:</strong> ${progressPct(p)}%</p>
+    <h2>Notes</h2>
+    <p>${nlToBr(p.notes)||'—'}</p>
+  </body></html>`); w.document.close();
+}
+
+// ═════════════════════════════════════════════
+//  SETTINGS
+// ═════════════════════════════════════════════
+function renderSettings(){
+  const t = currentTeam(); if(!t){ document.getElementById('page-settings').innerHTML='<div class="empty-state">No team.</div>'; return; }
+  const isProActive = t.isPro || t.isOnTrial;
+  document.getElementById('page-settings').innerHTML = `
+    <div class="page-header"><div><h1 class="page-title">Settings</h1><p class="page-sub">Organization and account</p></div></div>
+    <div class="section">
+      <div class="section-title">Organization profile</div>
+      <div class="field"><label>Organization Name</label><input value="${escapeHtml(t.profile.orgName||'')}" onchange="currentTeam().profile.orgName=this.value; save(); document.querySelector('.sidebar-org .name').textContent = this.value || '(Team)';"/></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Plan <span class="badge ${isProActive?'badge-green':'badge-grey'}">${isProActive ? 'Pro' : 'Free'}</span></div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">${isProActive ? 'Unlimited team members.' : '3-member limit on Free.'}</p>
+      ${!isProActive ? '<button class="btn btn-teal" onclick="showUpgradeModal()">⭐ Upgrade to Pro</button>' : ''}
+    </div>
+    <div class="section">
+      <div class="section-title">Reset</div>
+      <button class="btn" style="background:var(--red);color:#fff" onclick="if(confirm('Wipe all rename projects? Cannot be undone.')){const team=currentTeam(); team.projects=[]; team.activeProjectId=null; save(); renderSettings();}">🗑 Reset all projects</button>
+    </div>
+  `;
+}
+
+
+
+// ═════════════════════════════════════════════
+//  DOCUMENTS PAGE
+// ═════════════════════════════════════════════
+const DOC_TYPES = [
+  { id:'articles', icon:'📄', name:'Articles of Amendment', desc:'State-specific form (or filing letter) to legally change the corporate name.' },
+  { id:'resolution', icon:'⚖️', name:'Board Resolution Authorizing Name Change', desc:'Formal board action approving the new name and authorizing officers to file.' },
+  { id:'minutes', icon:'📝', name:'Board Meeting Minutes (Name Change Vote)', desc:'Documenting the meeting at which the board approved the change.' },
+  { id:'irs-letter', icon:'✉️', name:'IRS Notification Letter', desc:'For attachment to next 990 OR direct submission to EO Determinations.' },
+  { id:'form-8822b', icon:'📋', name:'Form 8822-B Cover Note', desc:'Filing helper letter for 501(c)(4)/(c)(6)/(c)(7) and others using Form 8822-B.' },
+  { id:'donor-letter', icon:'💝', name:'Donor / Stakeholder Notification Letter', desc:'Template letter reassuring donors that tax-deductible status is unchanged.' },
+  { id:'press', icon:'📰', name:'Press Release Template', desc:'Public announcement of the new name and rationale.' },
+  { id:'checklist', icon:'☑️', name:'Master Notification Checklist (.docx)', desc:'All notification items as a single printable checklist.' },
+  { id:'trademark', icon:'™️', name:'Brand &amp; Trademark Checklist (.docx)', desc:'Clearance, domain, social, and registration checklist.' }
+];
+
+function renderDocuments(){
+  const p = activeProject();
+  if (!p){ document.getElementById('page-documents').innerHTML = `<div class="empty-state">Open a project first.</div>`; return; }
+  document.getElementById('page-documents').innerHTML = `
+    <div class="page-header">
+      <div><h1 class="page-title">Documents</h1><p class="page-sub">Generate any of 9 templates personalized for this project</p></div>
+    </div>
+
+    <div class="section">
+      <p style="font-size:14px;color:var(--text);margin-bottom:14px">Each template below auto-fills with your project data. Preview as HTML to review in a new tab, or download a Word .docx file to edit further.</p>
+      ${DOC_TYPES.map(d => `
+        <div class="dl-row" style="padding:16px">
+          <div style="font-size:28px;flex-shrink:0">${d.icon}</div>
+          <div style="flex:1">
+            <div style="font-weight:700;color:var(--navy);font-size:15px">${d.name}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">${d.desc}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-outline" onclick="previewDoc('${d.id}')">👁 Preview</button>
+            <button class="btn btn-teal" onclick="downloadDoc('${d.id}')">📥 .docx</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function ensureDocxLib(){
+  return new Promise((resolve, reject) => {
+    if (window.docx) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/docx@8.5.0/build/index.umd.js';
+    s.onload = () => resolve(); s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+function previewDoc(id){
+  const p = activeProject(); if(!p) return;
+  const data = buildDocData(id, p);
+  if (!data){ alert('Could not build document. Make sure project basics are filled in.'); return; }
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(data.title)}</title>
+  <style>body{font-family:Georgia,serif;max-width:780px;margin:30px auto;padding:40px;line-height:1.7;color:#222}h1{color:#1B3A5C;font-size:24px;margin-bottom:14px;border-bottom:2px solid #2A7B6F;padding-bottom:8px}h2{color:#1B3A5C;font-size:16px;margin-top:22px}p{margin-bottom:10px}.muted{color:#666;font-size:13px;margin-top:30px;padding-top:16px;border-top:1px solid #eee}.sig{margin-top:50px}pre{font-family:Georgia,serif;white-space:pre-wrap;line-height:1.7;font-size:14.5px}</style>
+  </head><body>
+  <h1>${escapeHtml(data.title)}</h1>
+  ${data.bodyHtml || ('<pre>'+escapeHtml(data.body)+'</pre>')}
+  <div class="muted">Template generated by Build Your Club Academy · Nonprofit Name Change Assistant. Review with legal counsel before filing.</div>
+  </body></html>`;
+  const w = window.open('','_blank'); w.document.write(html); w.document.close();
+}
+
+async function downloadDoc(id){
+  const p = activeProject(); if(!p) return;
+  const data = buildDocData(id, p);
+  if (!data){ alert('Could not build document.'); return; }
+  await ensureDocxLib();
+  const { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel } = window.docx;
+  const para = (text, opts) => new Paragraph({ children:[ new TextRun({ text: text || '', ...(opts||{}) }) ], spacing:{ after:120 } });
+  const heading = (text) => new Paragraph({ heading: HeadingLevel.HEADING_1, children:[ new TextRun({ text, color:'1B3A5C', bold:true, size:28 }) ], spacing:{ before:200, after:200 } });
+  const sub = (text) => new Paragraph({ children:[ new TextRun({ text, color:'1B3A5C', bold:true, size:22 }) ], spacing:{ before:200, after:120 } });
+
+  const children = [];
+  children.push(heading(data.title));
+  if (data.subtitle) children.push(para(data.subtitle, { italics:true, size:22, color:'666666' }));
+  children.push(para(''));
+  // Split body by ## (markdown-style subheading) and \n
+  data.body.split('\n').forEach(line => {
+    if (line.startsWith('## ')) children.push(sub(line.slice(3)));
+    else children.push(para(line, { size:22 }));
+  });
+  const doc = new Document({ sections:[{ properties:{}, children }] });
+  const blob = await Packer.toBlob(doc);
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url; link.download = `${data.title.replace(/[^a-zA-Z0-9]/g,'_')}.docx`;
+  document.body.appendChild(link); link.click(); link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function buildDocData(id, p){
+  if (!p) return null;
+  const today = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+  const sd = p.state && STATE_DATA[p.state];
+  const ent = entityTypeLabel(p.entityType);
+  const orgAddr = [p.address, [p.city, p.stateAbbr, p.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+
+  if (id === 'articles'){
+    return {
+      title: 'Articles of Amendment — Name Change',
+      subtitle: `${sd ? sd.name + ' · ' + sd.form : 'State-specific filing'}`,
+      body:
+`## Article I — Name
+The current legal name of the corporation is:
+    ${p.oldName || '[CURRENT LEGAL NAME]'}
+
+## Article II — Amendment
+The corporation hereby amends its Articles of Incorporation to change its legal name to:
+    ${p.newName || '[NEW LEGAL NAME]'}
+
+## Article III — Adoption
+This amendment was duly adopted by the Board of Directors on ${p.boardVoteDate ? fmtDate(p.boardVoteDate) : '[BOARD VOTE DATE]'}, in accordance with the bylaws of the corporation and the laws of the State of ${sd ? sd.name : '[STATE]'}.
+
+## Article IV — Effective Date
+This amendment shall become effective ${p.effectiveDate ? 'on ' + fmtDate(p.effectiveDate) : 'upon filing'}.
+
+## Signature
+The undersigned, being a duly authorized officer of the corporation, hereby executes these Articles of Amendment.
+
+Signed: _________________________________________________
+
+Printed name: ${p.signatoryName || '[Name]'}
+Title: ${p.signatoryTitle || '[Title]'}
+Date: ${today}
+
+EIN: ${p.ein || '[EIN]'}
+
+## Filing instructions (for your reference; not part of the document)
+File this document with the ${sd ? sd.agency : '[state agency]'}. Filing fee: ${sd ? sd.fee : '[fee]'}. Processing time: ${sd ? sd.processing : '[processing]'}. ${sd && sd.note ? 'Special note: ' + sd.note : ''}`
+    };
+  }
+
+  if (id === 'resolution'){
+    return {
+      title: 'Board Resolution — Authorizing Name Change',
+      body:
+`WHEREAS, ${p.oldName || '[Corporation Name]'} (the "Corporation"), a ${sd ? sd.name : '[State]'} nonprofit corporation, finds it advantageous to change its legal name; and
+
+WHEREAS, the proposed new name is ${p.newName || '[New Name]'}; and
+
+WHEREAS, the Board of Directors has reviewed the rationale: ${p.rationale || '[Rationale for the name change]'};
+
+NOW, THEREFORE, BE IT RESOLVED:
+
+1. The legal name of the Corporation shall be changed to ${p.newName || '[New Name]'}.
+
+2. The officers of the Corporation are hereby authorized and directed to:
+   (a) File Articles of Amendment with the ${sd ? sd.agency : '[state agency]'} reflecting this name change;
+   (b) Notify the Internal Revenue Service of the name change as required for a ${ent};
+   (c) Update the Corporation's state charitable solicitation registration, sales tax exemption certificate, and other state filings as applicable;
+   (d) Notify banks, vendors, insurance carriers, payroll providers, and other stakeholders;
+   (e) Update bylaws, corporate seal, letterhead, website, and all branded materials.
+
+3. The Employer Identification Number (EIN) of the Corporation, ${p.ein || '[EIN]'}, shall remain unchanged.
+
+4. This Resolution shall be effective ${p.effectiveDate ? 'on ' + fmtDate(p.effectiveDate) : 'immediately upon adoption'}.
+
+Adopted by the Board of Directors of the Corporation on ${p.boardVoteDate ? fmtDate(p.boardVoteDate) : '[date]'}.
+
+## Certification
+I, ${p.signatoryName || '[Secretary Name]'}, ${p.signatoryTitle || 'Secretary'} of the Corporation, hereby certify that the foregoing is a true and correct copy of the resolution duly adopted by the Board of Directors.
+
+Signed: _________________________________________________
+Date: ${today}`
+    };
+  }
+
+  if (id === 'minutes'){
+    return {
+      title: 'Board Meeting Minutes — Name Change Vote',
+      body:
+`Date of meeting: ${p.boardVoteDate ? fmtDate(p.boardVoteDate) : '[Date]'}
+Location: [Meeting location or video conference]
+Called to order: [Time]
+
+## Attendance
+Directors present: [List]
+Directors absent: [List]
+Also present: [Staff, counsel, observers]
+
+## Quorum
+A quorum was confirmed by the Secretary in accordance with the bylaws.
+
+## Approval of prior minutes
+[Approved / amended as noted]
+
+## New business: Proposed name change
+The Board considered a proposal to change the legal name of the Corporation from ${p.oldName || '[Current Name]'} to ${p.newName || '[New Name]'}.
+
+Rationale presented: ${p.rationale || '[Rationale]'}
+
+Discussion: [Summarize key points raised by Directors. Note any concerns, questions, and how they were resolved.]
+
+## Motion
+A motion was made by [Director Name], seconded by [Director Name], that the Corporation adopt the Board Resolution authorizing the change of legal name to ${p.newName || '[New Name]'}, and authorize the officers to file all necessary documents with the state, IRS, and other authorities.
+
+Vote: [In favor / opposed / abstained]
+Result: Motion carried.
+
+## Adjournment
+There being no further business, the meeting was adjourned at [time].
+
+Respectfully submitted,
+${p.signatoryName || '[Secretary Name]'}
+${p.signatoryTitle || 'Secretary'}
+${today}`
+    };
+  }
+
+  if (id === 'irs-letter'){
+    const path = IRS_PATHS[p.entityType] || IRS_PATHS['other'];
+    return {
+      title: 'IRS Notification — Name Change',
+      subtitle: `Method: ${path.method}`,
+      body:
+`Internal Revenue Service
+${p.entityType === '501c3' ? 'Exempt Organizations — EO Determinations\nP.O. Box 2508\nCincinnati, OH 45201' : 'Center where last return was filed (or address on prior IRS correspondence)'}
+
+${today}
+
+Re: Notification of name change for ${p.oldName || '[Current Name]'}
+     EIN: ${p.ein || '[EIN]'}
+     Entity type: ${ent}
+
+To Whom It May Concern:
+
+Please be advised that ${p.oldName || '[Current Name]'} (EIN: ${p.ein || '[EIN]'}) has changed its legal name to ${p.newName || '[New Name]'} effective ${p.effectiveDate ? fmtDate(p.effectiveDate) : '[effective date]'}.
+
+The Articles of Amendment reflecting this name change were filed with the ${sd ? sd.agency : '[State Agency]'} and approved on ${p.effectiveDate ? fmtDate(p.effectiveDate) : '[date]'}. A copy is attached.
+
+The Corporation's Employer Identification Number, tax-exempt status under ${ent}, and address remain unchanged. We respectfully request that the IRS update its records to reflect the new name.
+
+Please direct any future correspondence to:
+${p.newName || '[New Name]'}
+${orgAddr || '[Address]'}
+
+Thank you for your attention to this matter.
+
+Sincerely,
+
+${p.signatoryName || '[Officer Name]'}
+${p.signatoryTitle || '[Title]'}
+${p.newName || '[New Name]'}
+
+## Enclosures
+- Certified Articles of Amendment
+- Board resolution authorizing name change`
+    };
+  }
+
+  if (id === 'form-8822b'){
+    return {
+      title: 'Form 8822-B Cover Note — Name Change',
+      body:
+`To: Internal Revenue Service
+From: ${p.newName || '[New Name]'}
+EIN: ${p.ein || '[EIN]'}
+Date: ${today}
+
+This cover note accompanies Form 8822-B, "Change of Address or Responsible Party — Business," filed to notify the IRS of a legal name change for the above organization.
+
+Old name: ${p.oldName || '[Old Name]'}
+New name: ${p.newName || '[New Name]'}
+Effective date of change: ${p.effectiveDate ? fmtDate(p.effectiveDate) : '[Effective Date]'}
+
+The Articles of Amendment have been filed with the ${sd ? sd.agency : '[State Agency]'} on ${p.effectiveDate ? fmtDate(p.effectiveDate) : '[date]'}.
+
+The EIN, tax-exempt status (${ent}), and mailing address remain unchanged.
+
+Authorized signature:
+${p.signatoryName || '[Name]'}
+${p.signatoryTitle || '[Title]'}
+
+## How to file Form 8822-B
+- Download the current Form 8822-B from irs.gov/form8822b.
+- Check the box indicating a name change.
+- Enter old and new legal name in the designated fields.
+- Have an officer sign and date the form.
+- Mail to the IRS center listed in the instructions for your state.
+- Keep a copy for your records along with proof of mailing.`
+    };
+  }
+
+  if (id === 'donor-letter'){
+    return {
+      title: 'Donor / Stakeholder Notification Letter',
+      body:
+`${today}
+
+Dear Friend,
+
+We are writing to share important news about our organization. Effective ${p.effectiveDate ? fmtDate(p.effectiveDate) : '[Effective Date]'}, ${p.oldName || '[Old Name]'} is operating under a new legal name: ${p.newName || '[New Name]'}.
+
+${p.rationale || 'This change reflects [briefly explain rationale — strategic evolution, mission focus, community-led rebrand, etc.].'}
+
+What this means for you:
+
+• Your relationship with our organization continues unchanged. The work you support, the people we serve, and the mission we share remain the same.
+
+• Our Employer Identification Number (EIN) is unchanged. All prior gifts and any future gifts to ${p.newName || '[New Name]'} continue to be tax-deductible to the extent allowed by law.
+
+• Past donation receipts and acknowledgment letters using the old name remain valid for your tax records.
+
+• Future correspondence, receipts, and program updates will arrive under the new name.
+
+Please update your records as follows:
+   Legal name: ${p.newName || '[New Name]'}
+   EIN: ${p.ein || '[EIN]'}
+   Address: ${orgAddr || '[Address]'}
+
+Thank you for your continued partnership. We look forward to a renewed chapter together.
+
+With gratitude,
+
+${p.signatoryName || '[Officer Name]'}
+${p.signatoryTitle || '[Title]'}
+${p.newName || '[New Name]'}`
+    };
+  }
+
+  if (id === 'press'){
+    return {
+      title: 'Press Release — Name Change Announcement',
+      body:
+`FOR IMMEDIATE RELEASE
+${today}
+
+Contact: ${p.signatoryName || '[Contact Name]'}, ${p.signatoryTitle || '[Title]'}
+Email: [contact email]  |  Phone: [contact phone]
+
+## ${(p.oldName || '[Old Name]').toUpperCase()} ANNOUNCES NEW NAME: ${(p.newName || '[NEW NAME]').toUpperCase()}
+
+${(p.city || 'City')}, ${(p.stateAbbr || 'State')} — ${p.oldName || '[Old Name]'}, a ${ent}, announced today that it will operate under a new legal name effective ${p.effectiveDate ? fmtDate(p.effectiveDate) : '[Effective Date]'}: ${p.newName || '[New Name]'}.
+
+${p.rationale || '"[Insert quote from board leadership explaining the rationale for the change, the continuity of mission, and the future direction.]" said ' + (p.signatoryName || '[Spokesperson]') + ', ' + (p.signatoryTitle || '[Title]') + '.'}
+
+The organization's Employer Identification Number, tax-exempt status, programs, staff, and address remain unchanged. The new name takes effect across all communications, signage, and digital properties beginning ${p.effectiveDate ? fmtDate(p.effectiveDate) : '[Effective Date]'}.
+
+## About ${p.newName || '[New Name]'}
+${p.newName || '[New Name]'} (formerly ${p.oldName || '[Old Name]'}) is a ${ent} based in ${(p.city || '[City]')}, ${(p.stateAbbr || '[State]')}. [Insert one-paragraph organizational description: mission, programs, history, and impact.]
+
+For more information, visit [website] or contact ${p.signatoryName || '[Contact]'} at [email].
+
+# # #`
+    };
+  }
+
+  if (id === 'checklist'){
+    let body = `Master Notification Checklist
+Project: ${p.newName || p.name}
+Generated: ${today}
+
+For each item below, indicate the date completed and the person responsible.
+
+`;
+    const grouped = {};
+    NOTIFICATION_ITEMS.forEach(item => { if(!grouped[item.cat]) grouped[item.cat] = []; grouped[item.cat].push(item); });
+    Object.entries(grouped).forEach(([cat, items]) => {
+      body += `\n## ${cat}\n`;
+      items.forEach(item => {
+        const state = (p.notifications||{})[item.id] || {};
+        const status = state.done ? `✓ Done ${state.doneDate ? '('+fmtDate(state.doneDate)+')' : ''}` : '☐ Pending';
+        body += `${status}   ${item.label}\n         ${item.detail}\n\n`;
+      });
+    });
+    return { title:'Master Notification Checklist', body };
+  }
+
+  if (id === 'trademark'){
+    let body = `Brand & Trademark Checklist
+Project: ${p.newName || p.name}
+Generated: ${today}
+
+Proposed new name: ${p.newName || '[New Name]'}
+
+`;
+    TRADEMARK_CHECKLIST.forEach(item => {
+      const state = (p.trademark||{})[item.id] || {};
+      const status = state.done ? '✓ Done' : '☐ Pending';
+      body += `${status}   ${item.label}\n`;
+      if (state.notes) body += `         Notes: ${state.notes}\n`;
+      body += '\n';
+    });
+    return { title:'Brand and Trademark Checklist', body };
+  }
+
+  return null;
+}
+
+
+
+// Seed demo + admin once
+function seedDemo(){
+  if (!state.users['demo@example.org']){
+    state.users['demo@example.org'] = { name: 'Demo Leader', password: 'demo', teamId: null, isSuperAdmin: false };
+    const tid = createTeam('demo@example.org', { orgName:'Build Your Club Foundation' });
+    state.users['demo@example.org'].teamId = tid;
+    seedRenameForTeam(state.teams[tid]);
+    state.users['member@example.org'] = { name: 'Demo Member', password: 'demo', teamId: tid, isSuperAdmin: false };
+    state.teams[tid].members['member@example.org'] = 'member';
+  }
+  if (!state.users['skycopatc@yahoo.com']){
+    state.users['skycopatc@yahoo.com'] = { name: 'Steve (Admin)', password: 'Buildyourclub', teamId: null, isSuperAdmin: true };
+  }
+  save();
+}
+
+function routeAfterAuth(){
+  // Show app shell, navigate to dashboard
+  document.getElementById('screen-auth').classList.add('hidden');
+  document.getElementById('screen-onboarding').classList.add('hidden');
+  const app = document.getElementById('screen-app');
+  if (app) app.classList.remove('hidden');
+  // Update sidebar org name
+  const t = currentTeam();
+  const orgEl = document.querySelector('.sidebar-org .name');
+  if (orgEl && t) orgEl.textContent = t.profile.orgName || '(Team)';
+  navigate('dashboard');
+}
+
+function showUpgradeModal(){ alert('Pro features coming soon!'); }
+
+load();
+seedDemo();
+if (state.currentEmail && state.users[state.currentEmail]){
+  routeAfterAuth();
+} else {
+  document.getElementById('screen-auth').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

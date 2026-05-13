@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nonprofit Name Change Assistant — User Guide</title>
+<style>
+  :root {
+    --navy:#1B3A5C;--teal:#0F766E;--gold:#D4A843;--light:#EFF4FA;--mid:#C8D8EA;
+    --dark:#1E293B;--muted:#64748B;--bg:#F8FAFC;--card:#FFFFFF;--radius:10px;
+    --green:#15803D;--green-bg:#DCFCE7;--amber:#B45309;--amber-bg:#FEF3C7;
+    --red:#DC2626;--red-bg:#FEE2E2;--purple:#7C3AED;--purple-bg:#F5F3FF;
+    --blue:#2563EB;--blue-bg:#EFF6FF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--dark);line-height:1.7;font-size:15px}
+  .layout{display:flex;min-height:100vh}
+  .sidebar{width:265px;min-width:265px;background:var(--navy);color:#fff;position:sticky;top:0;height:100vh;overflow-y:auto;padding:0 0 32px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .sidebar-brand{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.14);margin-bottom:10px}
+  .sidebar-brand .logo{font-size:18px;font-weight:800;color:var(--gold)}
+  .sidebar-brand .sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;line-height:1.4}
+  .toc-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.32);padding:10px 20px 4px}
+  .toc a{display:block;padding:7px 20px;color:rgba(255,255,255,.68);text-decoration:none;font-size:13px;border-left:3px solid transparent;transition:all .15s}
+  .toc a:hover,.toc a.active{color:#fff;background:rgba(255,255,255,.08);border-left-color:var(--gold)}
+  .toc a.sub{padding-left:34px;font-size:12px;color:rgba(255,255,255,.46)}
+  .toc a.sub:hover{color:rgba(255,255,255,.82)}
+  .toc-sep{border-top:1px solid rgba(255,255,255,.1);margin:10px 0}
+  .main{flex:1;min-width:0;padding:48px 56px;max-width:900px}
+  @media(max-width:820px){.sidebar{display:none}.main{padding:24px 18px}}
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,#1e4d8c 100%);border-radius:var(--radius);padding:40px 44px;color:#fff;margin-bottom:48px}
+  .hero-eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:10px;font-weight:600}
+  .hero h1{font-size:28px;font-weight:800;line-height:1.25;margin-bottom:10px}
+  .hero p{color:rgba(255,255,255,.78);font-size:15px;max-width:580px;line-height:1.65}
+  .hero-badges{display:flex;gap:.6rem;margin-top:18px;flex-wrap:wrap}
+  .hero-badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:#fff}
+  .section{margin-bottom:60px}
+  h2{font-size:22px;font-weight:700;color:var(--navy);padding-bottom:10px;border-bottom:2px solid var(--mid);margin-bottom:22px;scroll-margin-top:24px}
+  h3{font-size:16px;font-weight:700;color:var(--teal);margin:26px 0 10px}
+  p{margin-bottom:14px}
+  ul,ol{padding-left:22px;margin-bottom:14px}
+  li{margin-bottom:7px}
+  a{color:var(--blue)}
+  strong{color:var(--navy)}
+  .callout{border-left:4px solid var(--gold);background:var(--light);border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;margin:18px 0}
+  .callout.tip{border-left-color:var(--teal)}
+  .callout.warn{border-left-color:#E87B3B;background:#FFF8F0}
+  .callout.info{border-left-color:var(--blue);background:var(--blue-bg)}
+  .callout-head{font-weight:700;font-size:14px;color:var(--navy);margin-bottom:6px}
+  .callout p{margin-bottom:6px;font-size:14px}
+  .callout p:last-child{margin-bottom:0}
+  .tbl-wrap{overflow-x:auto;margin:16px 0 24px;border-radius:var(--radius);border:1px solid var(--mid)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{background:var(--navy);color:#fff;text-align:left;padding:10px 14px;font-weight:600;font-size:13px}
+  td{padding:10px 14px;border-bottom:1px solid var(--mid);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:var(--light)}
+  .back-top{display:inline-block;font-size:12px;color:var(--muted);text-decoration:none;margin-top:32px;padding:6px 14px;border:1px solid var(--mid);border-radius:20px}
+</style></head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">Build Your Club</div>
+    <div class="sub">Nonprofit Name Change Assistant<br>User Guide</div>
+  </div>
+  <div class="toc-label">Contents</div>
+  <div class="toc">
+    <a href="#about">1. About This Tool</a>
+    <a href="#scenarios">2. The Six Scenarios</a>
+    <a href="#start">3. Getting Started</a>
+    <a href="#project">4. Project Overview</a>
+    <a href="#state">5. State Filing</a>
+    <a href="#irs">6. IRS Notification</a>
+    <a href="#notify">7. Notification Checklist</a>
+    <a href="#trademark">8. Brand &amp; Trademark</a>
+    <a href="#documents">9. Generated Documents</a>
+    <a href="#legal">10. Legal &amp; Compliance Notes</a>
+    <a href="#cross">11. Cross-App Integration</a>
+    <div class="toc-sep"></div>
+    <a href="#contact">Contact &amp; Support</a>
+  </div>
+</nav>
+
+<main class="main" id="top">
+  <div class="hero">
+    <div class="hero-eyebrow">Build Your Club · User Guide</div>
+    <h1>Nonprofit Name Change Assistant<br>User Guide</h1>
+    <p>Plan, document, and execute a legal name change for any state-formed nonprofit corporation — from HOA homeowner takeovers to strategic rebrands to mergers. Includes state-by-state filing requirements, IRS notification routing, a 22-item notification checklist, and 9 ready-to-use document templates.</p>
+    <div class="hero-badges">
+      <span class="hero-badge">All 50 States + DC</span>
+      <span class="hero-badge">All Entity Types</span>
+      <span class="hero-badge">6 Scenarios</span>
+      <span class="hero-badge">9 Document Templates</span>
+      <span class="hero-badge">22-Item Checklist</span>
+    </div>
+  </div>
+
+  <div class="section" id="about">
+    <h2>1. About This Tool</h2>
+    <p>Most "how to rename a nonprofit" advice online is fragmented across half a dozen state agency websites, IRS publications, and law-firm blog posts written for a specific entity type. This tool consolidates the workflow into one place — for any state-formed nonprofit corporation, regardless of whether the IRS has recognized you as tax-exempt yet.</p>
+    <p>It handles the legal name change (state Articles of Amendment), the federal record update (IRS notification path varies by entity type), and the long tail of operational notifications (bank, vendors, insurance, donors, social media, county recorder for HOAs). All of it is tracked per project so you can run multiple renames in parallel if you advise several organizations.</p>
+    <div class="callout warn">
+      <div class="callout-head">This is a working assistant, not legal advice</div>
+      <p>The generated documents are templates based on common state requirements and IRS guidance. Have your attorney review filings before submission, especially for complex situations (mergers, attorney general approvals in CA/NY, trademark conflicts, fiscal sponsorship exits with intellectual property considerations).</p>
+    </div>
+  </div>
+
+  <div class="section" id="scenarios">
+    <h2>2. The Six Scenarios</h2>
+    <p>Renaming a nonprofit looks similar in mechanics across cases, but the rationale, timeline, and stakeholder communication differ significantly. The Assistant supports six common scenarios:</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>Scenario</th><th>Typical trigger</th><th>Key consideration</th></tr>
+      <tr><td>🏘️ HOA Homeowner Takeover</td><td>Builder hits sales threshold and turns the association over to homeowners.</td><td>Coordinate with CC&amp;Rs recorded at county; notify all members formally.</td></tr>
+      <tr><td>🎨 Strategic Rebrand</td><td>Mission has evolved beyond the original name; new identity reflects current scope.</td><td>Communicate continuity of mission and tax-deductible status to donors.</td></tr>
+      <tr><td>🤝 Merger Absorption</td><td>Two organizations combining; surviving entity takes a new name.</td><td>Involve counsel — mergers have their own state filings beyond just a name change.</td></tr>
+      <tr><td>⚖️ Trademark Conflict</td><td>Cease-and-desist or search reveals conflict with an existing mark.</td><td>Move quickly; document the trademark issue for board records.</td></tr>
+      <tr><td>🕊️ Memorial Rename</td><td>Founder or major figure deceased; honoring their legacy.</td><td>Coordinate with family; press release tone should be celebratory, not somber.</td></tr>
+      <tr><td>🚪 Fiscal Sponsorship Exit</td><td>Project incubated under a fiscal sponsor is now independent.</td><td>This is more than a rename — typically involves new EIN and 1023 filing.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="section" id="start">
+    <h2>3. Getting Started</h2>
+    <p>Demo credentials: <strong>demo@example.org</strong> / <strong>demo</strong> — populated with a sample HOA-takeover project (Sunset Ridge HOA) to show all features in context.</p>
+    <h3>Your first 30 minutes</h3>
+    <ol>
+      <li>Click <strong>+ Start a Rename</strong> to launch the wizard. Pick the scenario that matches your situation.</li>
+      <li>On the Project Overview page, fill in: current legal name, proposed new legal name, EIN, state, board vote date, and rationale.</li>
+      <li>Go to <strong>State Filing</strong> to see the form, fee, and processing time for your state.</li>
+      <li>Go to <strong>IRS Notification</strong> to see the path that applies to your entity type.</li>
+      <li>Go to <strong>Notification Checklist</strong> and read through all 22 items so you know what's coming.</li>
+      <li>Go to <strong>Documents</strong> and generate the Board Resolution to bring to your next board meeting.</li>
+    </ol>
+  </div>
+
+  <div class="section" id="project">
+    <h2>4. Project Overview</h2>
+    <p>The Project Overview page captures the core record: identity, board approval, and address. Most generated documents pull from these fields, so it's worth taking ten minutes to fill them in carefully.</p>
+    <h3>Required fields</h3>
+    <ul>
+      <li><strong>Current Legal Name</strong> — the exact name on your state filing record (use the full name with "Inc." or "Corporation" if applicable).</li>
+      <li><strong>Proposed New Legal Name</strong> — what you want it to become.</li>
+      <li><strong>EIN</strong> — your Federal Tax ID. <strong>Does not change</strong> with a rename.</li>
+      <li><strong>State of Incorporation</strong> — usually your home state.</li>
+      <li><strong>Entity Type</strong> — determines the IRS notification path.</li>
+      <li><strong>Rationale</strong> — a paragraph explaining why. Goes into the board resolution and donor letter.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="state">
+    <h2>5. State Filing</h2>
+    <p>Every state has its own form for amending corporate Articles of Incorporation. The Assistant has data for all 50 states and DC: form name, filing fee, processing time, filing agency, and any special notes.</p>
+    <h3>What to expect</h3>
+    <p>For most states, the process is:</p>
+    <ol>
+      <li>Download the state's Articles of Amendment form from the Secretary of State (or equivalent agency) website, or generate one from the Assistant's Documents page.</li>
+      <li>Fill in current name, new name, board vote date, and effective date.</li>
+      <li>Sign and date as an authorized officer (typically Board President or Secretary).</li>
+      <li>Submit with the filing fee. Most states accept online submission; some require mail.</li>
+      <li>Wait for the certified copy (1–4 weeks depending on state).</li>
+    </ol>
+    <div class="callout warn">
+      <div class="callout-head">Two states have special requirements</div>
+      <p><strong>California:</strong> Public benefit corporations must notify the Attorney General's Registry of Charitable Trusts.<br><strong>New York:</strong> Charitable corporations require pre-approval from the Attorney General Charities Bureau before filing with the Department of State. Allow 30–60 extra days.</p>
+    </div>
+  </div>
+
+  <div class="section" id="irs">
+    <h2>6. IRS Notification</h2>
+    <p>The IRS notification path depends on your entity type. The Assistant routes you automatically based on what you set in the Project Overview.</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>Entity type</th><th>Notification method</th></tr>
+      <tr><td>501(c)(3)</td><td>Written notice with next Form 990 (or written request to EO Determinations for an early update).</td></tr>
+      <tr><td>501(c)(4) — including most HOAs</td><td>Form 8822-B OR written notice with next 990. Many HOAs file both.</td></tr>
+      <tr><td>501(c)(6), 501(c)(7), other tax-exempt</td><td>Form 8822-B is the most common path. Confirm with tax counsel.</td></tr>
+      <tr><td>State-only (no IRS recognition yet)</td><td>No IRS step required at this stage. Use new name when you eventually file 1023.</td></tr>
+    </table></div>
+    <p>The Assistant generates a tailored IRS Notification Letter and a Form 8822-B Cover Note for whichever path applies to you.</p>
+  </div>
+
+  <div class="section" id="notify">
+    <h2>7. Notification Checklist</h2>
+    <p>Twenty-two organizations and systems should be notified after a name change. The Assistant groups them by category — Financial, Compliance, Insurance, Operations, Stakeholders, Brand — and lets you check each one off as you complete it.</p>
+    <h3>Highest priority items (do first)</h3>
+    <ul>
+      <li><strong>Bank.</strong> Update account name and signature card. Bring board resolution, amended articles, and EIN letter.</li>
+      <li><strong>State charitable solicitation registration.</strong> Most states require notification within 30–90 days.</li>
+      <li><strong>D&amp;O insurance carrier.</strong> Endorse policies for the new name.</li>
+      <li><strong>Payroll provider.</strong> New name appears on W-2s and 1099s going forward.</li>
+      <li><strong>For HOAs only — county recorder.</strong> CC&amp;Rs reference the original entity; record a name-change notice.</li>
+    </ul>
+    <div class="callout tip">
+      <div class="callout-head">A good rule of thumb</div>
+      <p>Most state filings, IRS notifications, and stakeholder communications can wait 30 days. But financial and insurance items should be done within 14 days — the cost of a check or claim under the wrong name is far higher than the rush.</p>
+    </div>
+  </div>
+
+  <div class="section" id="trademark">
+    <h2>8. Brand &amp; Trademark</h2>
+    <p>Before you commit to a new name in writing, run clearance checks. The Assistant's Brand &amp; Trademark page walks through:</p>
+    <ul>
+      <li>USPTO TESS trademark search (free)</li>
+      <li>State business registry search</li>
+      <li>Domain availability across .org, .com, .net</li>
+      <li>Social media handle availability</li>
+      <li>Google the name to surface unrelated organizations</li>
+      <li>Optional: attorney clearance and trademark registration</li>
+    </ul>
+    <p>Each item has a notes field so you can record search results, links, and decisions for the board record.</p>
+  </div>
+
+  <div class="section" id="documents">
+    <h2>9. Generated Documents</h2>
+    <p>The Documents page generates 9 templates personalized with your project data. Preview each as HTML or download as Word .docx for editing.</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>Document</th><th>When to use</th></tr>
+      <tr><td>Articles of Amendment</td><td>The state filing itself.</td></tr>
+      <tr><td>Board Resolution</td><td>Bring to the board meeting where the name change is voted on.</td></tr>
+      <tr><td>Board Meeting Minutes</td><td>Documenting the meeting where the vote occurred.</td></tr>
+      <tr><td>IRS Notification Letter</td><td>Attach to next Form 990 (or send to EO Determinations).</td></tr>
+      <tr><td>Form 8822-B Cover Note</td><td>For 501(c)(4)/(c)(6)/(c)(7) and others using Form 8822-B.</td></tr>
+      <tr><td>Donor / Stakeholder Letter</td><td>Reassures donors that tax-deductible status is unchanged.</td></tr>
+      <tr><td>Press Release</td><td>For your public announcement.</td></tr>
+      <tr><td>Master Notification Checklist (.docx)</td><td>Printable / shareable version of the 22-item list.</td></tr>
+      <tr><td>Brand &amp; Trademark Checklist (.docx)</td><td>Printable clearance-research checklist.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="section" id="legal">
+    <h2>10. Legal &amp; Compliance Notes</h2>
+    <ul>
+      <li><strong>EIN does not change.</strong> Your Federal Tax ID stays the same through a rename. Prior donor receipts using the old name remain valid for donor tax records.</li>
+      <li><strong>Tax-exempt status carries over.</strong> The IRS updates its records when you notify them; your 501(c)(3) determination letter is updated on request, but old letters remain proof of status.</li>
+      <li><strong>Existing grant agreements</strong> may require formal acknowledgment of the new name. Notify active funders.</li>
+      <li><strong>State charitable registrations</strong> generally must be amended within 30–90 days. Penalties for late notice vary by state.</li>
+      <li><strong>Bylaws</strong> should reference the new legal name. Update at the same board meeting that authorizes the change.</li>
+      <li><strong>For HOAs:</strong> CC&amp;Rs recorded at the county reference the original entity. Record a name-change notice with the county recorder so future buyers' title searches surface the change.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="cross">
+    <h2>11. Cross-App Integration</h2>
+    <p>The Name Change Assistant works well alongside other Build Your Club Academy apps:</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>App</th><th>How it connects</th></tr>
+      <tr><td><a href="https://501c3.buildyourclubacademy.org" target="_blank">501(c)(3) Formation Assistant</a></td><td>For state-only orgs filing 1023 with the new name post-rename.</td></tr>
+      <tr><td><a href="https://compliance.buildyourclubacademy.org" target="_blank">Compliance Tracker</a></td><td>Track post-rename filings (state charity, sales tax, etc.) by deadline.</td></tr>
+      <tr><td><a href="https://handbook.buildyourclubacademy.org" target="_blank">Board Handbook</a></td><td>Update bylaws and governance docs to reflect the new name.</td></tr>
+      <tr><td><a href="https://donors.buildyourclubacademy.org" target="_blank">Donor CRM</a></td><td>Generate the donor announcement letter from your CRM contacts.</td></tr>
+      <tr><td><a href="https://marketing.buildyourclubacademy.org" target="_blank">Marketing</a></td><td>Plan the rebrand launch campaign and press strategy.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="section" id="contact">
+    <h2>Contact &amp; Support</h2>
+    <p>For questions or feedback, contact the Build Your Club Academy team at <a href="mailto:skycopatc@yahoo.com">skycopatc@yahoo.com</a>.</p>
+  </div>
+
+</main>
+</div>
+</body></html>
