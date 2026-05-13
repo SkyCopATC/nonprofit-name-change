@@ -1382,11 +1382,14 @@ function renderDocuments(){
   `;
 }
 
+// SRI: paste sha384 hash for docx@8.5.0 to enable Subresource Integrity (see aaa_references/Documents/SRI-Hashes.html)
+const DOCX_LIB_INTEGRITY = 'sha384-4xaIisuLEy2lo2HkB2C4rEf7v8jbTb2kuogX6TkuEt9feTWKBSFSOzsqNNbV+sKh';
 function ensureDocxLib(){
   return new Promise((resolve, reject) => {
     if (window.docx) return resolve();
     const s = document.createElement('script');
     s.src = 'https://unpkg.com/docx@8.5.0/build/index.umd.js';
+    if (DOCX_LIB_INTEGRITY) { s.integrity = DOCX_LIB_INTEGRITY; s.crossOrigin = 'anonymous'; }
     s.onload = () => resolve(); s.onerror = reject;
     document.head.appendChild(s);
   });
@@ -1745,11 +1748,8 @@ function seedDemo(){
     state.users['member@example.org'] = { name: 'Demo Member', password: 'demo', teamId: tid, isSuperAdmin: false };
     state.teams[tid].members['member@example.org'] = 'member';
   }
-  // DEMO ADMIN SEED — change before sharing with users you don't trust.
-  // The 'admin' role only grants visibility into team counts within this browser; no remote access.
-  if (!state.users['skycopatc@yahoo.com']){
-    state.users['skycopatc@yahoo.com'] = { name: 'Steve (Admin)', password: 'change-me-in-settings', teamId: null, isSuperAdmin: true };
-  }
+  // First registered user automatically becomes super-admin for this browser.
+  // No email is hardcoded — keeps personal email out of the public source repo.
   save();
 }
 
@@ -1796,7 +1796,7 @@ function doSignUp(){
   if (!name || !email || !pass) { alert('All fields required'); return; }
   if (pass.length < 6) { alert('Password must be at least 6 characters'); return; }
   if (state.users[email]) { alert('Account already exists. Try signing in.'); return; }
-  state.users[email] = { name, password: pass, teamId: null, isSuperAdmin: false };
+  state.users[email] = { name, password: pass, teamId: null, isSuperAdmin: Object.keys(state.users).length === 0 };
   state.currentEmail = email;
   save();
   showTeamChoice();
