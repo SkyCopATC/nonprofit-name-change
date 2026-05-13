@@ -1747,20 +1747,162 @@ function seedDemo(){
   save();
 }
 
-function routeAfterAuth(){
-  // Show app shell, navigate to dashboard
-  document.getElementById('screen-auth').classList.add('hidden');
-  document.getElementById('screen-onboarding').classList.add('hidden');
-  const app = document.getElementById('screen-app');
-  if (app) app.classList.remove('hidden');
-  // Update sidebar org name
+/* removed: replaced with donor CRM version */
+
+
+
+// ═════════════════════════════════════════════
+//  AUTH FUNCTIONS
+// ═════════════════════════════════════════════
+
+function startOnboarding(){
   const t = currentTeam();
-  const orgEl = document.querySelector('.sidebar-org .name');
-  if (orgEl && t) orgEl.textContent = t.profile.orgName || '(Team)';
-  navigate('dashboard');
+  obData = (t && t.profile) || {};
+  document.getElementById('ob-orgname').value = obData.orgName || '';
+  document.getElementById('screen-auth').classList.add('hidden');
+  document.getElementById('screen-teamchoice').classList.add('hidden');
+  document.getElementById('screen-app').classList.add('hidden');
+  document.getElementById('screen-onboard').classList.remove('hidden');
+}
+function switchAuthTab(which){
+  document.getElementById('tab-signin').classList.toggle('active', which==='signin');
+  document.getElementById('tab-signup').classList.toggle('active', which==='signup');
+  document.getElementById('form-signin').classList.toggle('hidden', which!=='signin');
+  document.getElementById('form-signup').classList.toggle('hidden', which!=='signup');
 }
 
-function showUpgradeModal(){ alert('Pro features coming soon!'); }
+function doSignIn(){
+  const email = (document.getElementById('si-email').value || '').trim().toLowerCase();
+  const pass = document.getElementById('si-pass').value;
+  if (!email || !pass) { alert('Email and password required'); return; }
+  const u = state.users[email];
+  if (!u || u.password !== pass) { alert('Email not found or password incorrect.\n\nTry demo@example.org / demo'); return; }
+  state.currentEmail = email;
+  state.adminViewingTeam = null;
+  save();
+  routeAfterAuth();
+}
+
+function doSignUp(){
+  const name = (document.getElementById('su-name').value || '').trim();
+  const email = (document.getElementById('su-email').value || '').trim().toLowerCase();
+  const pass = document.getElementById('su-pass').value;
+  if (!name || !email || !pass) { alert('All fields required'); return; }
+  if (pass.length < 6) { alert('Password must be at least 6 characters'); return; }
+  if (state.users[email]) { alert('Account already exists. Try signing in.'); return; }
+  state.users[email] = { name, password: pass, teamId: null, isSuperAdmin: false };
+  state.currentEmail = email;
+  save();
+  showTeamChoice();
+}
+
+function signOut(){
+  state.currentEmail = null;
+  save();
+  document.getElementById('screen-app').classList.add('hidden');
+  document.getElementById('screen-onboard').classList.add('hidden');
+  document.getElementById('screen-auth').classList.remove('hidden');
+}
+
+function chooseTeamPath(p){
+  if (p === 'new'){
+    document.getElementById('screen-teamchoice').classList.add('hidden');
+    startOnboarding();
+  } else {
+    document.getElementById('join-team-section').classList.remove('hidden');
+    document.getElementById('join-code').focus();
+  }
+}
+
+function finishOnboarding(){
+  const name = document.getElementById('ob-orgname').value.trim();
+  if (!name){ alert('Please enter your organization name'); return; }
+  obData.orgName = name;
+  const u = currentUser();
+  if (u.teamId && state.teams[u.teamId]){
+    state.teams[u.teamId].profile = { ...state.teams[u.teamId].profile, ...obData };
+  } else {
+    const tid = createTeam(state.currentEmail, obData);
+    u.teamId = tid;
+  }
+  save();
+  bootApp();
+}
+
+function joinTeamByCode(){
+  const code = (document.getElementById('join-code').value || '').trim().toUpperCase();
+  if (!code) { alert('Enter a team code'); return; }
+  const team = state.teams[code];
+  if (!team) { alert('That team code wasn\'t found. Double-check with the team leader.'); return; }
+  const u = currentUser();
+  // Enforce free-tier seat limit
+  const memberCount = Object.keys(team.members||{}).length;
+  if (!team.isPro && memberCount >= 3){
+    alert('This team is on the Free plan and already has 3 members. Ask the team leader to upgrade to Pro for unlimited seats.');
+    return;
+  }
+  team.members[state.currentEmail] = 'member';
+  u.teamId = code;
+  save();
+  bootApp();
+}
+
+// ═══ proper boot functions from donor CRM ═══
+function bootApp(){
+  document.getElementById('screen-auth').classList.add('hidden');
+  document.getElementById('screen-onboard').classList.add('hidden');
+  document.getElementById('screen-teamchoice').classList.add('hidden');
+  document.getElementById('screen-app').classList.remove('hidden');
+  const u = currentUser();
+  const t = currentTeam();
+  const orgLabel = t && t.profile && t.profile.orgName ? t.profile.orgName : (u.isSuperAdmin ? 'Super Admin' : '—');
+  document.getElementById('sb-org').textContent = orgLabel;
+  document.getElementById('sb-uname').textContent = u.name + (u.isSuperAdmin ? ' (Admin)' : '');
+  document.getElementById('sb-avatar').textContent = (u.name||'?').charAt(0).toUpperCase();
+  // Show admin nav only for super-admin
+  document.getElementById('nav-admin').classList.toggle('hidden', !u.isSuperAdmin);
+  // Pro badge
+  updateProBadge();
+  // Default page: admin for super-admin, dashboard otherwise
+  navigate(u.isSuperAdmin && !state.adminViewingTeam ? 'admin' : 'dashboard');
+}
+
+function showTeamChoice(){
+  document.getElementById('screen-auth').classList.add('hidden');
+  document.getElementById('screen-onboard').classList.add('hidden');
+  document.getElementById('screen-app').classList.add('hidden');
+  document.getElementById('screen-teamchoice').classList.remove('hidden');
+  document.getElementById('join-team-section').classList.add('hidden');
+}
+
+function routeAfterAuth(){
+  const u = currentUser();
+  if (u.isSuperAdmin && !u.teamId){ bootApp(); return; }   // admin lands in admin view
+  if (u.teamId && state.teams[u.teamId]) bootApp();
+  else showTeamChoice();
+}
+
+// ═══ additional helpers ═══
+function updateProBadge(){
+  const t = currentTeam();
+  const badge = document.getElementById('pro-badge');
+  const label = document.getElementById('pro-label');
+  const sub = document.getElementById('pro-sub');
+  if (!badge) return;
+  if (!t) { badge.classList.add('hidden'); return; }
+  badge.classList.remove('hidden');
+  if (t.isPro){
+    badge.classList.add('is-pro');
+    label.textContent = '✓ Pro Plan';
+    sub.textContent = t.isOnTrial ? 'Trial ends ' + new Date(t.trialEnds).toLocaleDateString() : 'Unlimited team seats';
+  } else {
+    badge.classList.remove('is-pro');
+    label.textContent = '⚡ Upgrade to Pro';
+    sub.textContent = '$29/month · 14-day free trial';
+  }
+}
+
+function showUpgradeModal(){alert("Pro features coming soon!");}
 
 load();
 seedDemo();
